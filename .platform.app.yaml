@@ -121,3 +121,7 @@ crons:
   drupal:
     spec: '*/20 * * * *'
     cmd: 'cd docroot ; drush core-cron'
+
+dependencies:
+  php:
+    "drush/drush": "^8.0"
