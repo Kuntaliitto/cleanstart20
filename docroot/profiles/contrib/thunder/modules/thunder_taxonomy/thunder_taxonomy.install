@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Contains Thunder taxonomy install / uninstall hooks.
+ */
+
+use Drupal\user\Entity\Role;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Update hook dependencies.
+ *
+ * @return mixed
+ *   Returns list of update hook dependencies.
+ */
+function thunder_taxonomy_update_dependencies() {
+
+  $dependencies['thunder_taxonomy'] = [
+    // Dependency on pinterest media type.
+    8002 => ['thunder' => '8114'],
+  ];
+
+  return $dependencies;
+}
+
+/**
+ * Implements hook_install().
+ */
+function thunder_taxonomy_install() {
+  // Add our base fields to the schema.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function thunder_taxonomy_uninstall() {
+  // Remove our base fields from the schema.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+}
+
+/**
+ * Grant term access permissions.
+ */
+function thunder_taxonomy_update_8001() {
+
+  /** @var \Drupal\user\Entity\Role[] $roles */
+  $roles = Role::loadMultiple();
+
+  /** @var \Drupal\taxonomy\Entity\Vocabulary[] $vocabularies */
+  $vocabularies = Vocabulary::loadMultiple();
+
+  foreach ($roles as $role) {
+
+    foreach ($vocabularies as $vocabulary) {
+      if ($role->hasPermission('access content')) {
+        $role->grantPermission('view published terms in ' . $vocabulary->id());
+      }
+      if ($role->hasPermission('view own unpublished content')) {
+        $role->grantPermission('view unpublished terms in ' . $vocabulary->id());
+      }
+      $role->save();
+
+    }
+  }
+
+}
+
+/**
+ * Enable pinterest paragraph type on taxonomy terms.
+ */
+function thunder_taxonomy_update_8002() {
+  /** @var \Drupal\thunder_updater\Updater $thunderUpdater */
+  $thunderUpdater = \Drupal::service('thunder_updater');
+
+  // Execute configuration update defintions with logging of fails and
+  // successes.
+  if ($thunderUpdater->executeUpdates([['thunder_taxonomy', 'thunder_taxonomy__update_8002']])) {
+    $thunderUpdater->checklist()->markUpdatesSuccessful(['thunder_taxonomy_update_8002']);
+  }
+  else {
+    $thunderUpdater->checklist()->markUpdatesFailed(['thunder_taxonomy_update_8002']);
+  }
+
+  // Output logged messages to related channel of update execution.
+  return $thunderUpdater->logger()->output();
+}

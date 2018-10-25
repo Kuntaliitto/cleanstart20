@@ -1,0 +1,11 @@
+uuid: df3fa4bd-47e3-4f06-a5f4-9f65951a35ad
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: DWVmtc4s1Z_ZWspLEI9_gYpBounZeebySFeqGRfMMA0
+name: Municipalities
+vid: municipalities
+description: ''
+hierarchy: 0
+weight: 0

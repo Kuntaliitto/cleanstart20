@@ -1,0 +1,11 @@
+uuid: 9b2ffe3c-ecff-4dcb-b2ca-de94d3c5b241
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: UZW0Up6qsXVyM5ePKlcDOK6eeQZfAXKZaD9uCy3XX7w
+id: link
+label: Link
+icon_uuid: null
+description: null
+behavior_plugins: {  }

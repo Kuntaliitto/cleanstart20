@@ -1,0 +1,82 @@
+name: Thunder
+type: profile
+description: 'The Drupal8 based CMS for professional publishing.'
+core: 8.x
+distribution:
+  name: Thunder
+  install:
+    theme: thunder_admin
+
+# Required modules
+dependencies:
+  # core
+  - block
+  - breakpoint
+  - ckeditor
+  - contextual
+  - menu_link_content
+  - datetime
+  - editor
+  - entity_reference
+  - image
+  - inline_form_errors
+  - menu_ui
+  - language
+  - node
+  - options
+  - path
+  - page_cache
+  - taxonomy
+  - dblog
+  - dynamic_page_cache
+  - toolbar
+  - field_ui
+  - file
+  - responsive_image
+  - views
+  - views_ui
+# contrib
+  - access_unpublished
+  - admin_toolbar_tools
+  - admin_toolbar_links_access_filter
+  - blazy
+  - config_selector
+  - content_lock
+  - ctools
+  - diff
+  - dropzonejs_eb_widget
+  - empty_fields
+  - entity_browser_entity_form
+  - field_group
+  - focal_point
+  - length_indicator
+  - libraries
+  - linkit
+  - media_entity_image
+  - media_entity_instagram
+  - media_entity_pinterest
+  - media_entity_slideshow
+  - media_entity_twitter
+  - media_expire
+  - metatag
+  - metatag_open_graph
+  - metatag_facebook
+  - metatag_twitter_cards
+  - paragraphs
+  - paragraph_split_text
+  - pathauto
+  - redirect
+  - scheduler
+  - simple_sitemap
+  - slick_media
+  - responsive_preview
+  - video_embed_media
+# thunder
+  - thunder_article
+  - thunder_media
+  - thunder_paragraphs
+  - thunder_taxonomy
+  - thunder_updater
+themes:
+  - thunder_base
+  - thunder_admin

@@ -1,0 +1,22 @@
+uuid: 53454fed-b71c-4923-9052-b2b736eacc94
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+_core:
+  default_config_hash: 7_dKB-PaErG51rtjJ0fUIuqs-Ps1errg79oU0YKbZlo
+id: node.field_municipalities
+field_name: field_municipalities
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,35 @@
+name: Kuntafibase
+type: profile
+description: 'The Drupal 8 pohjainen sisällönhallintajärjestelmä (CMS) kunnille, maakunnille ja sote-kuntayhtymille'
+core: 8.x
+package: Kuntafibase
+distribution:
+  name: Kuntafibase
+
+base profile:
+  name: thunder
+
+dependencies:
+  - kuntafibase_core
+  - action
+  - allowed_formats
+  - better_exposed_filters
+  - chosen
+  - chosen_lib
+  - config_translation
+  - content_translation
+  - datetime_range
+  - embed
+  - entity_embed
+  - facets
+  - facets_summary
+  - fb_instant_articles
+  - thunder_fia
+  - hal
+  - help
+  - link_attributes
+  - locale
+  - media_entity_document
+  - rest
+  - serialization
+  - update

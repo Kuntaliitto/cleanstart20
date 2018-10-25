@@ -1,0 +1,7 @@
+name: 'kuntafibase core'
+type: module
+description: 'Core fields and taxonomies'
+core: 8.x
+package: 'Kuntafibase'
+dependencies:
+  - comment

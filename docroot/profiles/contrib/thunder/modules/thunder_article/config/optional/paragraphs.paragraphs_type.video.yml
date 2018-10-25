@@ -1,0 +1,11 @@
+uuid: b59f49f4-9ca9-4d4b-bafc-1b02203a9e78
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: vnFORggcCGo3wRaEO0xMnmqJcK9qm1lCtVO69bl0lbs
+id: video
+label: Video
+icon_uuid: null
+description: null
+behavior_plugins: {  }
