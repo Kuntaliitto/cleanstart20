@@ -1,13 +1,10 @@
-uuid: b160d193-5fa5-48df-b37f-34208e0e7a01
-langcode: fi
+langcode: en
 status: true
 dependencies:
   module:
     - entity_reference_revisions
     - node
     - paragraphs
-_core:
-  default_config_hash: hYe0O4_HWQEpreIQFuctOIB_aho2IgkKWB8lpQ64kVk
 id: node.field_paragraphs
 field_name: field_paragraphs
 entity_type: node

@@ -1,11 +1,8 @@
-uuid: b85733d0-5d3b-4bbc-b38a-ec8e44df9e55
-langcode: fi
+langcode: en
 status: true
 dependencies:
   module:
     - node
-_core:
-  default_config_hash: rcftb3yL98aR_BSat7050Ao8dOe2cuOEG9zAfy4v4q0
 id: node.field_seo_title
 field_name: field_seo_title
 entity_type: node

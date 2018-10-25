@@ -8,7 +8,6 @@ dependencies:
     - field.field.node.basic_article.field_municipalities
     - field.field.node.basic_article.field_paragraphs
     - field.field.node.basic_article.field_seo_title
-    - field.field.node.basic_article.field_subtitle
     - field.field.node.basic_article.field_tags
     - field.field.node.basic_article.field_target_groups
     - field.field.node.basic_article.field_type
@@ -24,7 +23,6 @@ third_party_settings:
     group_basis:
       children:
         - title
-        - field_subtitle
         - field_seo_title
         - field_type
         - langcode
@@ -145,7 +143,7 @@ content:
     type: entity_reference_paragraphs
     region: content
   field_seo_title:
-    weight: 3
+    weight: 2
     settings:
       size: 60
       placeholder: ''
@@ -156,14 +154,6 @@ content:
           optimin: 15
           optimax: 50
           tolerance: 10
-    type: string_textfield
-    region: content
-  field_subtitle:
-    weight: 2
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
     type: string_textfield
     region: content
   field_tags:
@@ -185,7 +175,7 @@ content:
     type: entity_reference_autocomplete_tags
     region: content
   field_type:
-    weight: 4
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -195,7 +185,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 5
+    weight: 4
     region: content
     settings:
       include_locked: true
