@@ -2,3 +2,4 @@
 docroot/sites/*/files
 /files-private
 docroot/sites/*/private
+settings.local.php
