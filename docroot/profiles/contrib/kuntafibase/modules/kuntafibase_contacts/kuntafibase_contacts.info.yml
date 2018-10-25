@@ -9,6 +9,7 @@ dependencies:
   - scheduler
   - menu_ui
   - media_entity
+  - media_entity_image
   - thunder_media
   - empty_fields
   - entity_browser
