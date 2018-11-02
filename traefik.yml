@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  traefik:
+    image: traefik
+    restart: unless-stopped
+    command: -c /dev/null --web --docker --logLevel=DEBUG
+    networks:
+      - kuntafibase
+      - project2
+    ports:
+      - '8888:80'
+      - '8080:8080'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  kuntafibase:
+    external: 
+      name: kuntafibase-dir_default
+  project2:
+    external:
+      name: project2-dir_default
+
