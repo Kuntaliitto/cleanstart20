@@ -18,6 +18,9 @@ dependencies:
   - paragraphs
   - path
   - scheduler
+  - scheduler_content_moderation_integration
+  - select2
   - simple_sitemap
   - text
+  - thunder
   - user
