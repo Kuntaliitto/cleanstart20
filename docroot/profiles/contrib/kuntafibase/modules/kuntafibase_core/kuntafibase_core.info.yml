@@ -6,3 +6,4 @@ package: 'Kuntafibase'
 dependencies:
   - comment
   - link
+  - scheduler_content_moderation_integration
