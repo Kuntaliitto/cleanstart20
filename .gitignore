@@ -4,3 +4,4 @@ docroot/sites/*/files
 docroot/sites/*/private
 settings.local.php
 /.idea
+.DS_Store
