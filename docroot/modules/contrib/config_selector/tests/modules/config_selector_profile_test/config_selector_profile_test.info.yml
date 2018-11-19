@@ -3,12 +3,12 @@ type: profile
 # core: 8.x
 hidden: true
 dependencies:
-  - config_test
-  - config_selector
-  - config_selector_test_provides_multiple
+  - drupal:config_test
+  - config_selector:config_selector
+  - config_selector:config_selector_test_provides_multiple
 
-# Information added by Drupal.org packaging script on 2018-05-07
-version: '8.x-1.0-alpha4'
+# Information added by Drupal.org packaging script on 2018-11-12
+version: '8.x-1.0-beta1'
 core: '8.x'
 project: 'config_selector'
-datestamp: 1525693426
+datestamp: 1542033789

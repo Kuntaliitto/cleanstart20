@@ -20,7 +20,9 @@ trait LocalAwareRedirectResponseTrait {
    * {@inheritdoc}
    */
   protected function isLocal($url) {
-    return !UrlHelper::isExternal($url) || UrlHelper::externalIsLocal($url, $this->getRequestContext()->getCompleteBaseUrl());
+    return !UrlHelper::isExternal($url)
+      || UrlHelper::externalIsLocal($url, $this->getRequestContext()->getCompleteBaseUrl())
+      || in_array(parse_url($url, PHP_URL_HOST), \Drupal::moduleHandler()->invokeAll('local_domains'), TRUE);
   }
 
   /**

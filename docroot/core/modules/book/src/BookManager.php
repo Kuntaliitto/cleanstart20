@@ -546,6 +546,7 @@ class BookManager implements BookManagerInterface {
    */
   protected function buildItems(array $tree) {
     $items = [];
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
     foreach ($tree as $data) {
       $element = [];
@@ -577,6 +578,11 @@ class BookManager implements BookManagerInterface {
       $element['attributes'] = new Attribute();
       $element['title'] = $data['link']['title'];
       $node = $this->entityManager->getStorage('node')->load($data['link']['nid']);
+      if ($node->isTranslatable()) {
+         if ($node->hasTranslation($langcode)) {
+            $node = $node->getTranslation($langcode);
+         }
+      }
       $element['url'] = $node->urlInfo();
       $element['localized_options'] = !empty($data['link']['localized_options']) ? $data['link']['localized_options'] : [];
       $element['localized_options']['set_active_class'] = TRUE;
@@ -1004,6 +1010,12 @@ class BookManager implements BookManagerInterface {
       if (!$node) {
         $node = $this->entityManager->getStorage('node')
           ->load($link['nid']);
+      }
+      if ($node->isTranslatable()) {
+        $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+        if ($node->hasTranslation($langcode)) {
+          $node = $node->getTranslation($langcode);
+        }
       }
       // The node label will be the value for the current user's language.
       $link['title'] = $node->label();

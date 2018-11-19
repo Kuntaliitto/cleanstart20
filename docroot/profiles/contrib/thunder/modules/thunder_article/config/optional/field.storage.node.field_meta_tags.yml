@@ -1,12 +1,9 @@
-uuid: 2fbcceb6-26a9-4d5e-90f1-3cfbd8c74236
-langcode: fi
+langcode: en
 status: true
 dependencies:
   module:
     - metatag
     - node
-_core:
-  default_config_hash: toqvFhfgG3CpkhzHPz_gW5KwBaCstfihpup6v3aX1AI
 id: node.field_meta_tags
 field_name: field_meta_tags
 entity_type: node

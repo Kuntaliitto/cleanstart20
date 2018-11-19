@@ -349,6 +349,34 @@ class AliasStorage implements AliasStorageInterface {
   /**
    * {@inheritdoc}
    */
+  public function getPathsForAdminListing($header, $keys = NULL) {
+    $query = $this->connection->select(static::TABLE)
+      ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
+      ->extend('Drupal\Core\Database\Query\TableSortExtender');
+    if ($keys) {
+      // Replace wildcards with PDO wildcards.
+      $or = new Condition('OR');
+      $or->condition('alias', '%' . preg_replace('!\*+!', '%', $keys) . '%', 'LIKE');
+      $or->condition('source', '%' . preg_replace('!\*+!', '%', $keys) . '%', 'LIKE');
+      $query->condition($or);
+    }
+    try {
+      return $query
+        ->fields(static::TABLE)
+        ->orderByHeader($header)
+        ->limit(50)
+        ->execute()
+        ->fetchAll();
+    }
+    catch (\Exception $e) {
+      $this->catchException($e);
+      return [];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function pathHasMatchingAlias($initial_substring) {
     $query = $this->connection->select(static::TABLE, 'u');
     $query->addExpression(1);

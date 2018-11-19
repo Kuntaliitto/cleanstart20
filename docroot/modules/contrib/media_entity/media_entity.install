@@ -113,3 +113,42 @@ function media_entity_update_8003() {
     throw new \Drupal\Core\Utility\UpdateException('Entity API >= 8.x-1.0-alpha3 (drupal.org/project/entity) module is now a dependency and needs to be installed before running updates.');
   }
 }
+
+/**
+ * Keep existing bundle names visible in entity forms.
+ */
+function media_entity_update_8004() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $bundles = $entity_type_manager->getStorage('media_bundle')->getQuery()->execute();
+  foreach ($bundles as $bundle_name) {
+    /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $form_display */
+    $form_display = $entity_type_manager->getStorage('entity_form_display')
+      ->load('media.' . $bundle_name . '.default');
+    if (empty($form_display)) {
+      $values = [
+        'targetEntityType' => 'media',
+        'bundle' => $bundle_name,
+        'mode' => 'default',
+        'status' => TRUE,
+      ];
+      $form_display = \Drupal::entityTypeManager()
+        ->getStorage('entity_form_display')
+        ->create($values);
+      $form_display->save();
+    }
+    $name_settings = $form_display->getComponent('name');
+    if (empty($name_settings)) {
+      // This bundle has no override for the 'name' fieldbase, so it would get
+      // hidden after #2813685. Create an override to keep it visible.
+      $form_display->setComponent('name', [
+        'type' => 'string_textfield',
+        'weight' => -5,
+        'label' => 'hidden',
+        'settings' => [
+          'size' => 60,
+          'placeholder' => '',
+        ],
+      ])->save();
+    }
+  }
+}

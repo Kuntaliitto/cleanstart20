@@ -46,6 +46,13 @@ function system_requirements($phase) {
     $profile = drupal_get_profile();
     if ($profile != 'standard') {
       $info = system_get_info('module', $profile);
+
+      // If the profile isn't installed properly then install it.
+      if (empty($info)) {
+        \Drupal::service('module_installer')->install(array($profile), FALSE);
+        $info = system_get_info('module', $profile);
+      }
+      
       $requirements['install_profile'] = [
         'title' => t('Installation profile'),
         'value' => t('%profile_name (%profile-%version)', [

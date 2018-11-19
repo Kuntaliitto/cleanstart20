@@ -45,7 +45,7 @@ class PathLanguageUiTest extends PathTestBase {
     $this->drupalPostForm('admin/config/search/path/add', $edit, t('Save'));
 
     $this->drupalGet($name);
-    $this->assertText(t('Filter aliases'), 'Language-neutral URL alias works');
+    $this->assertText(t('Filter paths'), 'Language-neutral URL alias works');
   }
 
   /**
@@ -60,7 +60,7 @@ class PathLanguageUiTest extends PathTestBase {
     $this->drupalPostForm('admin/config/search/path/add', $edit, t('Save'));
 
     $this->drupalGet($name);
-    $this->assertText(t('Filter aliases'), 'English URL alias works');
+    $this->assertText(t('Filter paths'), 'English URL alias works');
   }
 
   /**
@@ -75,7 +75,7 @@ class PathLanguageUiTest extends PathTestBase {
     $this->drupalPostForm('admin/config/search/path/add', $edit, t('Save'));
 
     $this->drupalGet('fr/' . $name);
-    $this->assertText(t('Filter aliases'), 'Foreign URL alias works');
+    $this->assertText(t('Filter paths'), 'Foreign URL alias works');
   }
 
 }

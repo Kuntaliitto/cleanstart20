@@ -80,7 +80,8 @@ class PathController extends ControllerBase {
 
     $rows = [];
     $destination = $this->getDestinationArray();
-    foreach ($this->aliasStorage->getAliasesForAdminListing($header, $keys) as $data) {
+    $paths = $this->aliasStorage->getPathsForAdminListing($header, $keys);
+    foreach ($paths as $data) {
       $row = [];
       // @todo Should Path module store leading slashes? See
       //   https://www.drupal.org/node/2430593.

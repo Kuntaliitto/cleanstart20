@@ -1,9 +1,10 @@
-langcode: fi
+langcode: en
 status: true
 dependencies:
   config:
     - field.storage.node.field_channel
     - node.type.article
+    - taxonomy.vocabulary.channel
 id: node.article.field_channel
 field_name: field_channel
 entity_type: node
@@ -17,7 +18,8 @@ default_value_callback: ''
 settings:
   handler: 'default:taxonomy_term'
   handler_settings:
-    target_bundles: {  }
+    target_bundles:
+      channel: channel
     sort:
       field: _none
     auto_create: false

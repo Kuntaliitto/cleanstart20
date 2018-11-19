@@ -2,6 +2,7 @@
 
 namespace Drupal\config_selector\Controller;
 
+use Drupal\config_selector\ConfigSelector;
 use Drupal\config_selector\ConfigSelectorSortTrait;
 use Drupal\config_selector\Entity\FeatureInterface;
 use Drupal\Core\Controller\ControllerBase;
@@ -40,7 +41,7 @@ class Switcher extends ControllerBase {
     $entities = $config_selector_feature->getConfigurationByType($config_entity_type);
     unset($entities[$config_entity->id()]);
     $args = [
-      ':enabled_link' => $config_entity->toUrl('edit-form')->toString(),
+      ':enabled_link' => ConfigSelector::getConfigEntityLink($config_entity),
       '@enabled_label' => $config_entity->label(),
     ];
     foreach ($entities as $entity) {
@@ -48,7 +49,7 @@ class Switcher extends ControllerBase {
         $entity->setStatus(FALSE);
         $entity->save();
 
-        $args[':disabled_link'] = $entity->toUrl('edit-form')->toString();
+        $args[':disabled_link'] = ConfigSelector::getConfigEntityLink($entity);
         $args['@disabled_label'] = $entity->label();
         $this->getLogger('config_selector')->info('Configuration entity <a href=":disabled_link">@disabled_label</a> has been disabled in favor of <a href=":enabled_link">@enabled_label</a>.', $args);
       }

@@ -4,6 +4,7 @@ namespace Drupal\config_selector;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ConfigManagerInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -182,7 +183,7 @@ class ConfigSelector {
       $highest_priority_config = array_pop($configs);
       $highest_priority_config->setStatus(TRUE)->save();
       $variables = [
-        ':active_config_href' => $highest_priority_config->toUrl('edit-form')->toString(),
+        ':active_config_href' => static::getConfigEntityLink($highest_priority_config),
         '@active_config_label' => $highest_priority_config->label(),
       ];
       $this->logger->info(
@@ -253,9 +254,9 @@ class ConfigSelector {
       foreach ($configs as $config) {
         $config->setStatus(FALSE)->save();
         $variables = [
-          ':disabled_config_href' => $config->toUrl('edit-form')->toString(),
+          ':disabled_config_href' => static::getConfigEntityLink($config),
           '@disabled_config_label' => $config->label(),
-          ':active_config_href' => $active_config->toUrl('edit-form')->toString(),
+          ':active_config_href' => static::getConfigEntityLink($active_config),
           '@active_config_label' => $active_config->label(),
         ];
 
@@ -289,6 +290,30 @@ class ConfigSelector {
    */
   protected function drupalSetMessage($message = NULL, $type = 'status', $repeat = FALSE) {
     drupal_set_message($message, $type, $repeat);
+  }
+
+  /**
+   * Generates a link for a configuration entity if possible.
+   *
+   * @param \Drupal\Core\Config\Entity\ConfigEntityInterface $entity
+   *   The configuration entity to generate a link for.
+   *
+   * @return \Drupal\Core\GeneratedUrl|string
+   *   The best URL to link to the entity with. Edit links are preferred to
+   *   canonical links. If no link is possible an empty string is returned.
+   */
+  public static function getConfigEntityLink(ConfigEntityInterface $entity) {
+    try {
+      if ($entity->hasLinkTemplate('edit-form')) {
+        $url = $entity->toUrl('edit-form');
+      }
+      else {
+        $url = $entity->toUrl();
+      }
+    }
+    catch (\Exception $e) {
+    }
+    return isset($url) ? $url->toString() : '';
   }
 
 }

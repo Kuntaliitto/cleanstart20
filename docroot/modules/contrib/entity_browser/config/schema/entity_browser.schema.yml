@@ -233,3 +233,11 @@ field.widget.settings.entity_browser_file:
 views.display.entity_browser:
   type: views_display
   label: 'Entity browser display options'
+
+entity_browser.field_widget_display.inline_entity_form:
+  type: mapping
+  label: 'Inline entity form display widget'
+  mapping:
+    form_mode:
+      type: string
+      label: 'Form mode'

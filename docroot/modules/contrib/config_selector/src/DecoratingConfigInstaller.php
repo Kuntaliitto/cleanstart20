@@ -67,6 +67,17 @@ class DecoratingConfigInstaller implements ConfigInstallerInterface {
   }
 
   /**
+   * Gets the configuration storage that provides the default configuration.
+   *
+   * @return \Drupal\Core\Config\StorageInterface|null
+   *   The configuration storage that provides the default configuration.
+   *   Returns null if the source storage has not been set.
+   */
+  public function getSourceStorage() {
+    return $this->decoratedService->getSourceStorage();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function setSyncing($status) {

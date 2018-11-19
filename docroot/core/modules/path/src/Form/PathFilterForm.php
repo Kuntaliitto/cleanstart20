@@ -26,13 +26,13 @@ class PathFilterForm extends FormBase {
     $form['#attributes'] = ['class' => ['search-form']];
     $form['basic'] = [
       '#type' => 'details',
-      '#title' => $this->t('Filter aliases'),
+      '#title' => $this->t('Filter paths'),
       '#open' => TRUE,
       '#attributes' => ['class' => ['container-inline']],
     ];
     $form['basic']['filter'] = [
       '#type' => 'search',
-      '#title' => $this->t('Path alias'),
+      '#title' => $this->t('Path'),
       '#title_display' => 'invisible',
       '#default_value' => $keys,
       '#maxlength' => 128,

@@ -2,12 +2,18 @@
 
 namespace Drupal\views\Plugin\EntityReferenceSelection;
 
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginBase;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionTrait;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\views\Views;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'selection' entity_reference.
@@ -29,6 +35,49 @@ class ViewsSelection extends SelectionPluginBase implements ContainerFactoryPlug
    * @var \Drupal\views\ViewExecutable
    */
   protected $view;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Constructs a new selection object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The current renderer service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user, RendererInterface $renderer) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->entityManager = $entity_manager;
+    $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager'),
+      $container->get('module_handler'),
+      $container->get('current_user'),
+      $container->get('renderer')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -162,9 +211,17 @@ class ViewsSelection extends SelectionPluginBase implements ContainerFactoryPlug
 
     $return = [];
     if ($result) {
-      foreach ($this->view->result as $row) {
-        $entity = $row->_entity;
-        $return[$entity->bundle()][$entity->id()] = $entity->label();
+      // These results are usually displayed in an autocomplete field, which is
+      // surrounded by anchor tags. Most tags are allowed inside anchor tags,
+      // except for other anchor tags.
+      $allowed_tags = Xss::getAdminTagList();
+      if (($key = array_search('a', $allowed_tags)) !== FALSE) {
+        unset($allowed_tags[$key]);
+      }
+
+      foreach ($result as $id => $row) {
+        $entity = $row['#row']->_entity;
+        $return[$entity->bundle()][$id] = Xss::filter($this->renderer->renderPlain($row), $allowed_tags);
       }
     }
     return $return;

@@ -60,6 +60,9 @@ field.widget.settings.inline_entity_form_complex:
     allow_duplicate:
       type: boolean
       label: "Allow duplicate"
+    allow_asymmetric_translation:
+      type: boolean
+      label: "Allow asymmetric translation"
     collapsible:
       type: boolean
       label: "Collapsible"

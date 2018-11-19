@@ -204,7 +204,7 @@ function language_configuration_element_submit(&$form, FormStateInterface $form_
       $config->setLanguageAlterable($form_state->getValue([$element_name, 'language_alterable']));
       $config->save();
 
-      // Set the form_state languaged with the updated bundle.
+      // Set the form_state language with the updated bundle.
       $form_state->set('language', $language);
     }
   }
@@ -465,4 +465,23 @@ function language_tour_tips_alter(array &$tour_tips, EntityInterface $entity) {
 function language_language_types_info_alter(array &$language_types) {
   $language_types[LanguageInterface::TYPE_CONTENT]['fixed'] = [LanguageNegotiationUI::METHOD_ID];
   $language_types[LanguageInterface::TYPE_URL]['fixed'] = [LanguageNegotiationUrl::METHOD_ID, LanguageNegotiationUrlFallback::METHOD_ID];
+}
+
+/**
+ * Implements hook_local_domains().
+ */
+function language_local_domains() {
+  $language_negation_config = \Drupal::config('language.negotiation');
+  // Check if the URL language negotiation uses domains.
+  if ($language_negation_config->get('url.source') == LanguageNegotiationUrl::CONFIG_DOMAIN) {
+    /** @var \Drupal\language\LanguageNegotiatorInterface $negotiator */
+    $negotiator = \Drupal::service('language_negotiator');
+    // Check if the URL negotiation is enabled for at least one language type.
+    foreach (\Drupal::languageManager()->getLanguageTypes() as $language_type) {
+      if (isset($negotiator->getNegotiationMethods($language_type)[LanguageNegotiationUrl::METHOD_ID])) {
+        return $language_negation_config->get('url.domains');
+      }
+    }
+  }
+  return [];
 }

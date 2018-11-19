@@ -68,11 +68,17 @@ class BookBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       $depth++;
     }
     $parent_books = $this->nodeStorage->loadMultiple($book_nids);
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     if (count($parent_books) > 0) {
       $depth = 1;
       while (!empty($book['p' . ($depth + 1)])) {
         if (!empty($parent_books[$book['p' . $depth]]) && ($parent_book = $parent_books[$book['p' . $depth]])) {
           $access = $parent_book->access('view', $this->account, TRUE);
+          if ($parent_book->isTranslatable()) {
+            if ($parent_book->hasTranslation($langcode)) {
+              $parent_book = $parent_book->getTranslation($langcode);
+            }
+          }
           $breadcrumb->addCacheableDependency($access);
           if ($access->isAllowed()) {
             $breadcrumb->addCacheableDependency($parent_book);

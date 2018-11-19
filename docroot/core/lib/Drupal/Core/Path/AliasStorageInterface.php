@@ -151,8 +151,25 @@ interface AliasStorageInterface {
    *
    * @return array
    *   Array of items to be displayed on the current page.
+   *
+   * @deprecated in Drupal 8.6.0, will be removed before Drupal 9.0.0. Use
+   *   \Drupal\Core\Path\AliasStorageInterface::getPathsForAdminListing() instead.
    */
   public function getAliasesForAdminListing($header, $keys = NULL);
+
+  /**
+   * Loads paths for admin listing.
+   *
+   * @param array $header
+   *   Table header.
+   * @param string|null $keys
+   *   (optional) Search keyword that may include one or more '*' as wildcard
+   *   values.
+   *
+   * @return array
+   *   Array of items to be displayed on the current page.
+   */
+  public function getPathsForAdminListing($header, $keys = NULL);
 
   /**
    * Check if any alias exists starting with $initial_substring.

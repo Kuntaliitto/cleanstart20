@@ -90,6 +90,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
       'allow_existing' => FALSE,
       'match_operator' => 'CONTAINS',
       'allow_duplicate' => FALSE,
+      'allow_asymmetric_translation' => FALSE,
     ];
 
     return $defaults;
@@ -131,6 +132,15 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
       '#default_value' => $this->getSetting('allow_duplicate'),
     ];
 
+    // Allow setting only for translatable fields.
+    if ($this->fieldDefinition->isTranslatable()) {
+      $element['allow_asymmetric_translation'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Allow user to make asymmetric translation'),
+        '#default_value' => $this->getSetting('allow_asymmetric_translation'),
+      ];
+    }
+
     return $element;
   }
 
@@ -164,6 +174,10 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
     }
     else {
       $summary[] = $this->t('@label can not be duplicated.', ['@label' => $labels['plural']]);
+    }
+
+    if ($this->getSetting('allow_asymmetric_translation')) {
+      $summary[] = $this->t('@label can have asymmetric translations.', ['@label' => $labels['plural']]);
     }
 
     return $summary;
@@ -216,7 +230,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
       '#suffix' => '</div>',
       '#ief_id' => $this->getIefId(),
       '#ief_root' => TRUE,
-      '#translating' => $this->isTranslating($form_state),
+      '#translating' => $this->getSetting('allow_asymmetric_translation') ? $this->isTranslating($form_state) : FALSE,
       '#field_title' => $this->fieldDefinition->getLabel(),
       '#after_build' => [
         [get_class($this), 'removeTranslatabilityClue'],
@@ -387,20 +401,9 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
             '#submit' => ['inline_entity_form_open_row_form'],
             '#ief_row_delta' => $key,
             '#ief_row_form' => 'remove',
-            '#access' => !$element['#translating'],
           ];
         }
       }
-    }
-
-    // When in translation, the widget only supports editing (translating)
-    // already added entities, so there's no need to show the rest.
-    if ($element['#translating']) {
-      if (empty($entities)) {
-        // There are no entities available for translation, hide the widget.
-        $element['#access'] = FALSE;
-      }
-      return $element;
     }
 
     if ($cardinality > 1) {

@@ -156,6 +156,19 @@ class TranslationTest extends InlineEntityFormTestBase {
     $this->drupalPostForm(NULL, [], t('Save (this translation)'));
     $this->assertResponse(200, 'Saving the parent entity was successful.');
 
+    // Allow asymmetric translation.
+    $form_display_storage = $this->container->get('entity_type.manager')->getStorage('entity_form_display');
+    /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $display */
+    $display = $form_display_storage->load('node.ief_test_complex.default');
+    $component = $display->getComponent('multi');
+    $component['settings']['allow_asymmetric_translation'] = TRUE;
+    $display->setComponent('multi', $component)->save();
+    // Get edit form for new node with French translation.
+    $this->drupalGet('fr/node/' . $node->id() . '/edit');
+    // Confirm that the add and remove buttons are present with enabled 'allow_asymmetric_translation' setting.
+    $this->assertTrue((bool) $this->xpath('//input[@type="submit" and @value="Add new node" and @data-drupal-selector="edit-multi-actions-ief-add"]'), 'Add new node button appear in the table.');
+    $this->assertTrue((bool) $this->xpath('//input[@type="submit" and @value="Remove"]'), 'Remove button appear in the table.');
+
     // Load using the original titles, confirming they haven't changed.
     $first_inline_node = $this->drupalGetNodeByTitle('An inline node', TRUE);
     $second_inline_node = $this->drupalGetNodeByTitle('Another inline node', TRUE);

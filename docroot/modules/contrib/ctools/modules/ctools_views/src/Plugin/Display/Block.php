@@ -43,20 +43,26 @@ class Block extends CoreBlock {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
-    $options = $form['allow']['#options'];
-    $options['offset'] = $this->t('Pager offset');
-    $options['pager'] = $this->t('Pager type');
-    $options['hide_fields'] = $this->t('Hide fields');
-    $options['sort_fields'] = $this->t('Reorder fields');
-    $options['disable_filters'] = $this->t('Disable filters');
-    $options['configure_sorts'] = $this->t('Configure sorts');
-    $form['allow']['#options'] = $options;
-    // Update the items_per_page if set.
-    $defaults = array_filter($form['allow']['#default_value']);
-    if (isset($defaults['items_per_page'])) {
-      $defaults['items_per_page'] = 'items_per_page';
+    switch ($form_state->get('section')) {
+      case 'allow':
+        $form['allow']['#options'] = [
+         'offset' => $this->t('Pager offset'),
+          'pager' => $this->t('Pager type'),
+          'hide_fields' => $this->t('Hide fields'),
+          'sort_fields' => $this->t('Reorder fields'),
+          'disable_filters' => $this->t('Disable filters'),
+          'configure_sorts' => $this->t('Configure sorts'),
+        ];
+        // Update the items_per_page if set.
+        $defaults = array_filter($form['allow']['#default_value']);
+        if (isset($defaults['items_per_page'])) {
+          $defaults['items_per_page'] = 'items_per_page';
+        }
+        break;
     }
-    $form['allow']['#default_value'] = $defaults;
+    if (isset($defaults)) {
+      $form['allow']['#default_value'] = $defaults;
+    }
   }
 
   /**

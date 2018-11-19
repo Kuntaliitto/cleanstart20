@@ -303,15 +303,10 @@ class Media extends ContentEntityBase implements MediaInterface {
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Media name'))
       ->setDescription(t('The name of this media.'))
-      ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setRevisionable(TRUE)
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -5,
-      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
