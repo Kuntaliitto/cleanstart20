@@ -4,12 +4,12 @@ namespace Drupal\Tests\thunder\FunctionalJavascript;
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Element\DocumentElement;
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\thunder\ThunderTestTrait;
+use Drupal\Tests\thunder\Traits\ThunderTestTrait;
 
 /**
  * Base class for Thunder Javascript functional tests.
@@ -32,7 +32,7 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
    *
    * @see \Drupal\Tests\BrowserTestBase::installDrupal()
    */
-  protected static $modules = ['thunder_demo'];
+  protected static $modules = ['thunder_demo', 'content_moderation'];
 
   /**
    * The profile to install as a basis for testing.
@@ -86,7 +86,7 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
    */
   protected function getDriverArgs() {
     $desiredCapabilities = NULL;
-    $webDriverUrl = 'http://127.0.0.1:4444/wd/hub';
+    $webDriverUrl = $this->getWebDriverUrl();
 
     // Get Sauce Labs variables from environment, if Sauce Labs build is set.
     if (!empty(getenv('SAUCE_LABS_ENABLED'))) {
@@ -113,6 +113,20 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
   }
 
   /**
+   * Get WebDriver URL, that can be set by environment variable.
+   *
+   * @return string
+   *   Returns full URL to WebDriver interface.
+   */
+  protected function getWebDriverUrl() {
+    if (!empty(getenv('THUNDER_WEBDRIVER_HOST'))) {
+      return 'http://' . getenv('THUNDER_WEBDRIVER_HOST') . '/wd/hub';
+    }
+
+    return 'http://127.0.0.1:4444/wd/hub';
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function drupalLogin(AccountInterface $account) {
@@ -125,14 +139,14 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
 
     $this->drupalGet('user');
     $this->submitForm([
-      'name' => $account->getUsername(),
+      'name' => $account->getAccountName(),
       'pass' => $account->passRaw,
     ], t('Log in'));
 
     // @see BrowserTestBase::drupalUserIsLoggedIn()
     $account->sessionId = $this->getSession()
       ->getCookie($this->getSessionName());
-    $this->assertTrue($this->drupalUserIsLoggedIn($account), SafeMarkup::format('User %name successfully logged in.', ['name' => $account->getUsername()]));
+    $this->assertTrue($this->drupalUserIsLoggedIn($account), new FormattableMarkup('User %name successfully logged in.', ['%name' => $account->getAccountName()]));
 
     $this->loggedInUser = $account;
     $this->container->get('current_user')->setAccount($account);
@@ -399,7 +413,7 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
 
     $this->getSession()
       ->getDriver()
-      ->executeScript("let selection = CKEDITOR.instances[\"$ckEditorId\"].getSelection(); selection.selectElement(selection.root.getChild($childIndex));");
+      ->executeScript("let selection = CKEDITOR.instances[\"$ckEditorId\"].getSelection(); selection.selectElement(selection.root.getChild($childIndex)); var ranges = selection.getRanges(); ranges[0].setEndBefore(ranges[0].getBoundaryNodes().endNode); selection.selectRanges(ranges);");
   }
 
   /**
@@ -505,6 +519,20 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
   }
 
   /**
+   * Set moderation state.
+   *
+   * @param string $state
+   *   State id.
+   */
+  protected function setModerationState($state) {
+
+    $page = $this->getSession()->getPage();
+
+    $page->find('xpath', '//*[@id="edit-moderation-state-0"]')
+      ->selectOption($state);
+  }
+
+  /**
    * Checks if pull request is from fork.
    *
    * @return bool
@@ -527,6 +555,10 @@ abstract class ThunderJavascriptTestBase extends JavascriptTestBase {
    *   CKEditor ID.
    */
   protected function getCkEditorId($ckEditorCssSelector) {
+    // Since CKEditor requires some time to initialize, we are going to wait for
+    // CKEditor instance to be ready before we continue and return ID.
+    $this->getSession()->wait(10000, "(waitForCk = CKEDITOR.instances[jQuery(\"{$ckEditorCssSelector}\").attr('id')]) && waitForCk.instanceReady");
+
     $ckEditor = $this->getSession()->getPage()->find(
       'css',
       $ckEditorCssSelector

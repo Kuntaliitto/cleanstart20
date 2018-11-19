@@ -1,5 +1,117 @@
 # Change Log
 
+## [8.2.27](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.27) 2018-10-18
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.26...8.2.27)
+
+Update Drupal core and contrib modules. Thunder can now be installed from config.
+
+- Do [Make Thunder ready for install from configuration](https://www.drupal.org/project/thunder/issues/3000140)
+- Do [Update core and contrib](https://www.drupal.org/project/thunder/issues/3007539)
+
+## [8.2.26](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.26) 2018-10-10
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.25...8.2.26)
+
+Fixes a bug, that we introduced with the last release.
+
+- Fix [Disabled content_moderation breaks Thunder](https://www.drupal.org/project/thunder/issues/3003428)
+
+## [8.2.25](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.25) 2018-09-27
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.24...8.2.25)
+
+With this release we introduce a content moderation integration. When Thunder is freshly installed, you will no longer have
+a simple publish checkbox, but three moderation states to save into. This makes it possible to save a draft of an published
+article without overwriting the published version.
+
+Additionally it is possible to restrict the permission to publish an article to certain users. We introduced a new "restricted Editor" role
+that is only able to create drafts, but not publish those drafts.
+
+When updating from an earlier version of Thunder, you will not automatically get these changes, since it would break your
+existing article workflow. If you want to enable the feature, just enable the content moderation module.
+
+Since this functionality is based on Drupal core content moderation and workflow modules, it is possible to add as much
+states and state changes to it as you like.
+
+It is strongly recommended to also update to the most recent version of the Thunder admin theme.
+
+Main changes since 8.2.24:
+
+- Do [Be able to create and save a draft without changing the published article](https://www.drupal.org/project/thunder/issues/2820056)
+- Fix [Update tests fail after content moderation merge](https://www.drupal.org/project/thunder/issues/3002190)
+
+## [8.2.24](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.24) 2018-09-05
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.21...8.2.24)
+
+With the release of Drupal 8.6 some features that were part of thunder for a long time have been integrated into Drupal
+core. With this release we remove the duplicate functionality and rely on cores implementation:
+
+- Core provides now status fields dor taxonomy terms. See https://www.drupal.org/project/drupal/issues/2930996
+- Profiles can have have true dependencies, we do not need a workaround for that anymore. See https://www.drupal.org/project/drupal/issues/2952888
+- Configurable redirects after installation. See https://www.drupal.org/project/drupal/issues/2776605
+
+We added select2 as a new UX feature for select lists and implemented it for the tags selection. This improves
+the auto completion, reordering and deletion of tags.
+
+Additionally we removed several deprecations from code and updated to the newest version of required modules. The update
+of the entity_browser module also lead to a small UX improvement regarding replacing of images in the image paragraph.
+Instead of two clicks - one for removing the old image, and one to add a new image - you can now replace existing
+images with one click.
+
+Main changes since 8.2.21:
+
+- Do [Update to Entity Browser 1.5 and use newly available replace button](https://www.drupal.org/project/thunder/issues/2980452)
+- Do [Update to new diff release](https://www.drupal.org/project/thunder/issues/2987483)
+- Do [Integrate select2 module](https://www.drupal.org/project/thunder/issues/2988112)
+- Do [Prepare Thunder for Drupal 8.6 release](https://www.drupal.org/project/thunder/issues/2995568)
+- Do [Use core functionality to define real profile dependencies](https://www.drupal.org/project/thunder/issues/2969454)
+- Do [Remove custom code for redirect after installation](https://www.drupal.org/project/thunder/issues/2969459)
+- Do [Remove funky optional config install code](https://www.drupal.org/project/thunder/issues/2972637)
+- Fix [German installer test is failing on php5.6](https://www.drupal.org/project/thunder/issues/2989749)
+- Fix [Reduce deprecation errors](https://www.drupal.org/project/thunder/issues/2986501)
+
+## [8.2.23](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.23) 2018-08-02
+## [8.2.22](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.22) 2018-08-02
+
+8.2.22 and 8.2.23 were releases without changes. They were necessary to update the drupal.org tar-ball.
+
+## [8.2.21](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.21) 2018-07-19
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.20...8.2.21)
+
+The release fixes some testing issues, updates some modules and prepares thunder installations for the next admin theme 
+release.
+The next admin theme will have seven as a base theme. In preparation for this, we enable the seven theme for you. If 
+this fails for some reason enable it manually before updating to the thunder_admin theme 1.0.0!
+
+Changes since 8.2.20:
+
+- Fix [thunder_updater breaks caching of toolbar for non-admin users](https://www.drupal.org/project/thunder/issues/2961673)
+- Testing fix [Eslint configuration mismatch](https://www.drupal.org/project/thunder/issues/2979376)
+- Testing fix [Remove hard coded fixture filename](https://www.drupal.org/project/thunder/issues/2981588)
+- Do [Adopt new access_unpublished release](https://www.drupal.org/project/thunder/issues/2979843)
+- Do [Prepare distribution for next admin theme version](https://www.drupal.org/project/thunder/issues/2982342)
+
+## [8.2.20](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.20) 2018-06-13
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.19...8.2.20)
+
+This contains the update to the most current paragraphs release. This also means that we switch to the
+paragraphs "experimental" widget. The classic widget will still work, but it will not contain the Thunder specific
+enhancements like adding paragraphs in between other paragraphs or splitting text paragraphs.
+All the Thunder enhancements of paragraphs are now moved out of the distribution into the paragraphs_features module
+and can all be enabled and disabled to your liking. While we suggest using the Thunder admin theme, we also made sure, 
+that he paragraphs_features module works well with the seven theme.
+On update, the paragraphs fields that we ship get automatically updated to the experimental widget and should behave,
+as they did before. If you added some paragraph fields on your own, they will stay on the classic widget and will lose
+the add in between button. To re-enable the functionality, you will have to manually change the paragraph widget to
+experimental and enable the options you need in the widget settings. Options we provide are:
+
+- Enable confirmation on paragraphs remove
+- Enable add in between buttons
+- Enable split text for text paragraphs
+
+Changes since 8.2.19:
+
+- Do [[META] Move to Paragraphs experimental Widget](https://www.drupal.org/project/thunder/issues/2908887)
+- Fix [Do not disable "Autocollapse" and "Collapse / Edit all" options](https://www.drupal.org/project/thunder/issues/2979306)
+
 ## [8.2.19](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.19) 2018-06-11
 [Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.18...8.2.19)
 

@@ -69,12 +69,15 @@ function amp_update_8002() {
 function amp_update_8003() {
   $config_factory = \Drupal::configFactory();
   $styles = [
-    'image.style.amp_metadata_content_image_min_696px_wide',
-    'image.style.amp_metadata_logo_600x60',
+    'amp_metadata_content_image_min_696px_wide',
+    'amp_metadata_logo_600x60',
   ];
   foreach ($styles as $style) {
-    $config = $config_factory->getEditable($style);
-    $config->set('dependencies.enforced.module', ['amp']);
-    $config->save();
+    $image_style = \Drupal::entityTypeManager()->getStorage('image_style')->load($style);
+    if ($image_style) {
+      $config = $config_factory->getEditable('image.style.' . $style);
+      $config->set('dependencies.enforced.module', ['amp']);
+      $config->save();
+    }
   }
 }

@@ -1,6 +1,6 @@
 name: Thunder Admin
 type: theme
-# core: 8.x
+core: 8.x
 base theme: seven
 description: 'Administration theme for the Thunder Distribution that extends and modifies Sevens styles for authoring UX and integrated look and feel of the contributed modules used in the distribution.'
 
@@ -125,9 +125,3 @@ regions:
   sidebar_first: 'First sidebar'
 regions_hidden:
   - sidebar_first
-
-# Information added by Drupal.org packaging script on 2018-09-21
-version: '8.x-2.1'
-core: '8.x'
-project: 'thunder_admin'
-datestamp: 1537526590

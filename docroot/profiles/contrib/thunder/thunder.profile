@@ -5,21 +5,12 @@
  * Enables modules and site configuration for a thunder site installation.
  */
 
-use Drupal\Core\Extension\Extension;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\block\Entity\Block;
-
-/**
- * Implements hook_system_info_alter().
- */
-function thunder_system_info_alter(array &$info, Extension $file, $type) {
-  // Thunder can not work properly without these modules. So they are enforced
-  // to be enabled.
-  $required_modules = ['config_selector', 'views', 'media_entity', 'node'];
-  if ($type == 'module' && in_array($file->getName(), $required_modules)) {
-    $info['required'] = TRUE;
-  }
-}
+use Drupal\user\Entity\User;
+use Drupal\user\Entity\Role;
 
 /**
  * Implements hook_form_FORM_ID_alter() for install_configure_form().
@@ -46,64 +37,12 @@ function thunder_install_tasks(&$install_state) {
       'display_name' => t('Install additional modules'),
       'type' => 'batch',
     ],
+    'thunder_finish_installation' => [
+      'display_name' => t('Finish installation'),
+    ],
   ];
 
   return $tasks;
-}
-
-/**
- * Implements hook_install_tasks_alter().
- */
-function thunder_install_tasks_alter(array &$tasks, array $install_state) {
-  $tasks['install_finished']['function'] = 'thunder_post_install_redirect';
-}
-
-/**
- * Starts the tour after the installation.
- *
- * @param array $install_state
- *   The current install state.
- *
- * @return array
- *   A renderable array with a redirect header.
- */
-function thunder_post_install_redirect(array &$install_state) {
-  install_finished($install_state);
-
-  // Clear all messages.
-  drupal_get_messages();
-
-  $success_message = t('Congratulations, you installed @drupal!', [
-    '@drupal' => drupal_install_profile_distribution_name(),
-  ]);
-  drupal_set_message($success_message);
-
-  $output = [
-    '#title' => t('Ready to rock'),
-    'info' => [
-      '#markup' => t('Congratulations, you installed Thunder! If you are not redirected in 5 seconds, <a href="@url">click here</a> to proceed to your site.', [
-        '@url' => '/?tour=1',
-      ]),
-    ],
-    '#attached' => [
-      'http_header' => [
-        ['Cache-Control', 'no-cache'],
-      ],
-    ],
-  ];
-
-  // The installer doesn't make it easy (possible?) to return a redirect
-  // response, so set a redirection META tag in the output.
-  $meta_redirect = [
-    '#tag' => 'meta',
-    '#attributes' => [
-      'http-equiv' => 'refresh',
-      'content' => '0;url=/?tour=1',
-    ],
-  ];
-  $output['#attached']['html_head'][] = [$meta_redirect, 'meta_redirect'];
-
-  return $output;
 }
 
 /**
@@ -170,6 +109,21 @@ function _thunder_install_module_batch($module, $module_name, $form_values, &$co
 }
 
 /**
+ * Finish Thunder installation process.
+ *
+ * @param array $install_state
+ *   The install state.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function thunder_finish_installation(array &$install_state) {
+  // Assign user 1 the "administrator" role.
+  $user = User::load(1);
+  $user->roles[] = 'administrator';
+  $user->save();
+}
+
+/**
  * Implements hook_themes_installed().
  */
 function thunder_themes_installed($theme_list) {
@@ -202,7 +156,7 @@ function thunder_themes_installed($theme_list) {
 
     // Adding header and footer blocks to default article view.
     /** @var \Drupal\Core\Entity\Entity\EntityViewDisplay $display */
-    $display = entity_load('entity_view_display', 'node.article.default');
+    $display = entity_get_display('node', 'article', 'default');
 
     $display->setComponent('field_header_blocks', [
       'type' => 'entity_reference_entity_view',
@@ -290,6 +244,39 @@ function thunder_themes_installed($theme_list) {
  */
 function thunder_modules_installed($modules) {
 
+  if (in_array('content_moderation', $modules)) {
+    if (!Role::load('restricted_editor')) {
+      /** @var Drupal\config_update\ConfigRevertInterface $configReverter */
+      $configReverter = \Drupal::service('config_update.config_update');
+      $configReverter->import('user_role', 'restricted_editor');
+    }
+
+    // Granting permissions only for "editor" and "seo" user roles.
+    $roles = Role::loadMultiple(['editor', 'seo']);
+    foreach ($roles as $role) {
+      try {
+        $role->grantPermission('use editorial transition create_new_draft');
+        $role->grantPermission('use editorial transition publish');
+        $role->grantPermission('use editorial transition unpublish');
+        $role->grantPermission('use editorial transition unpublished_draft');
+        $role->grantPermission('use editorial transition unpublished_published');
+        $role->grantPermission('view any unpublished content');
+        $role->grantPermission('view latest version');
+        $role->save();
+      }
+      catch (EntityStorageException $storageException) {
+      }
+    }
+    if (\Drupal::service('module_handler')->moduleExists('scheduler')) {
+      \Drupal::service('module_installer')->install(['scheduler_content_moderation_integration']);
+    }
+  }
+  if (in_array('scheduler', $modules)) {
+    if (\Drupal::service('module_handler')->moduleExists('content_moderation')) {
+      \Drupal::service('module_installer')->install(['scheduler_content_moderation_integration']);
+    }
+  }
+
   // Move fields into form display.
   if (in_array('ivw_integration', $modules)) {
 
@@ -323,7 +310,7 @@ function thunder_modules_installed($modules) {
   if (in_array('thunder_riddle', $modules)) {
 
     /** @var \Drupal\field\Entity\FieldConfig $field */
-    $field = entity_load('field_config', 'node.article.field_paragraphs');
+    $field = \Drupal::entityTypeManager()->getStorage('field_config')->load('node.article.field_paragraphs');
 
     $settings = $field->getSetting('handler_settings');
 
@@ -333,17 +320,6 @@ function thunder_modules_installed($modules) {
     $field->setSetting('handler_settings', $settings);
 
     $field->save();
-  }
-
-  $configs = Drupal::configFactory()->loadMultiple(\Drupal::configFactory()->listAll());
-  foreach ($configs as $config) {
-    $dependencies = $config->get('dependencies.module');
-    $enforced_dependencies = $config->get('dependencies.enforced.module');
-    $dependencies = $dependencies ?: [];
-    $enforced_dependencies = $enforced_dependencies ?: [];
-    if (array_intersect($modules, $dependencies) || array_intersect($modules, $enforced_dependencies)) {
-      \Drupal::service('config.installer')->installOptionalConfig(NULL, ['config' => $config->getName()]);
-    }
   }
 }
 
@@ -394,5 +370,43 @@ function thunder_page_attachments(array &$attachments) {
 function thunder_toolbar_alter(&$items) {
   if (!empty($items['admin_toolbar_tools'])) {
     $items['admin_toolbar_tools']['#attached']['library'][] = 'thunder/toolbar.icon';
+  }
+}
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function thunder_library_info_alter(&$libraries, $extension) {
+  // Remove seven's dependency on the media/form library.
+  // Can be removed after #2916741 or #2916786 has landed.
+  if ($extension == 'seven' && isset($libraries['media-form'])) {
+    unset($libraries['media-form']['dependencies']);
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function thunder_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if (\Drupal::config('system.theme')->get('admin') == 'thunder_admin' && \Drupal::hasService('content_moderation.moderation_information')) {
+    /** @var \Drupal\content_moderation\ModerationInformationInterface $moderation_info */
+    $moderation_info = \Drupal::service('content_moderation.moderation_information');
+    if (!$moderation_info->canModerateEntitiesOfEntityType($entity_type)) {
+      return;
+    }
+    $fields['moderation_state']->setDisplayOptions('form', [
+      'type' => 'thunder_moderation_state_default',
+      'weight' => 100,
+      'settings' => [],
+    ]);
+  }
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function thunder_field_widget_info_alter(array &$info) {
+  if (!\Drupal::moduleHandler()->moduleExists('content_moderation')) {
+    unset($info['thunder_moderation_state_default']);
   }
 }
