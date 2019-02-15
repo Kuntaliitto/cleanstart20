@@ -14,10 +14,12 @@
 #}
 <div class="audiofield">
   {% for file in files %}
-    <audio preload="{% if settings.audio_player_lazyload == 1 %}none{% else %}auto{% endif %}" controls {% if settings.audio_player_autoplay == 1 %} autoplay {% endif %} {% if settings.download_button != 1 %} controlsList="nodownload" {% endif %}>
-       <source src="{{ file.url }}" type="audio/mpeg">
-       Your browser does not support the audio element.
-    </audio>
-    <label>{{ file.description }}</label>
+    <div class="audiofield-player">
+      <audio preload="{% if settings.audio_player_lazyload == 1 %}none{% else %}auto{% endif %}" controls {% if settings.audio_player_autoplay == 1 %} autoplay {% endif %} {% if settings.download_button != 1 %} controlsList="nodownload" {% endif %}>
+         <source src="{{ file.url }}" type="audio/mpeg">
+         Your browser does not support the audio element.
+      </audio>
+      <label>{{ file.description }}</label>
+    </div>
   {% endfor %}
 </div>

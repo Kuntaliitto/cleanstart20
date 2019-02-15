@@ -13,17 +13,9 @@
     "drupal/entity_browser": "^1",
     "drupal/search_api": "^1",
     "drupal/menu_block": "^1.4",
-    "drupal/file_entity": "^2",
-    "drupal/media_entity": "^1.6",
-    "drupal/media_entity_image": "^1",
-    "drupal/media_entity_document": "^1",
-    "drupal/media_entity_video": "^1@beta",
     "drupal/inline_entity_form": "1.0-rc1",
     "drupal/linkit": "5.0.0-beta7 as 4.0",
     "drupal/url_embed": "1.x-dev",
-    "drupal/video_embed_field": "^1",
-    "drupal/entity_embed": "^1",
-    "drupal/scheduler": "^1",
     "drupal/search_api_solr": "^1",
     "drupal/better_exposed_filters": "^3",
     "drupal/views_field_view": "1.x-dev",
@@ -43,7 +35,6 @@
     "drupal/ajax_comments": "1.0-beta2",
     "drupal/subpathauto": "1.0-beta1",
     "drupal/r4032login": "1.0-beta2",
-    "drupal/entity_reference_revisions": "^1",
     "drupal/redirect": "^1.3",
     "drupal/realname": "1.x-dev",
     "drupal/menu_multilingual": "1.x-dev#f4106e7",
@@ -57,7 +48,15 @@
     "drupal/extlink": "^1.0",
     "drupal/eu_cookie_compliance": "^1.0@beta",
     "drupal/default_content": "^1.0@alpha",
-    "drupal/entity_usage": "2.0-alpha4"
+    "drupal/entity_usage": "2.0-alpha7",
+    "drupal/video_embed_field": "^1",
+    "drupal/entity_embed": "^1",
+    "drupal/entity": "1.0-rc1",
+    "drupal/allowed_formats": "1.x-dev",
+    "drupal/embed": "~1.0",
+    "drupal/facets": "~1.0",
+    "drupal/link_attributes": "~1.0",
+    "drupal/media_entity_document": "^1.1"
   },
   "require-dev": {
     "behat/behat": ">=3.1 <3.4",
@@ -91,11 +90,8 @@
         "Allow install profile disable": "https://www.drupal.org/files/issues/install-profile-1170362-235.patch",
         "Make entity reference work with views": "https://www.drupal.org/files/issues/2174633-174.patch",
         "More link disappears when time-based views cache is enabled": "https://www.drupal.org/files/issues/more_link_disappears-1819538-24.patch",
-        "Widget fix": "https://www.drupal.org/files/issues/2614250-36.patch",
         "Limiting options for exposed Language filters": "https://www.drupal.org/files/issues/drupal-exposed-language-filter-errors-2693727-1.patch",
-        "Escape markup in forms": "https://www.drupal.org/files/issues/2652850-17.patch",
         "Allow redirects": "https://www.drupal.org/files/issues/2643466-10.patch",
-        "Ajax views leave obsolete Drupal.Ajax instances": "https://www.drupal.org/files/issues/2018-03-31/drupal_ajax.patch",
         "Path alias filter by system path": "https://www.drupal.org/files/issues/2018-03-24/path_alias_filter_by-2418755-69.patch",
         "Make Book navigation translatable": "https://www.drupal.org/files/issues/book-navigation-translatable-2470896-26.patch"
       },
@@ -108,6 +104,9 @@
       },
       "drupal/inline_entity_form": {
         "Add entity reference in translation": "https://www.drupal.org/files/issues/2018-06-21/inline_entity_form-support_adding_new_entities_when_translating-2822764-32.patch"
+      },
+      "drupal/scheduler": {
+        "Scheduler integration with core Content moderation": "https://www.drupal.org/files/issues/2018-08-02/2798689-102.patch"
       }
     }
   }

@@ -62,7 +62,7 @@ function realname_user_format_name_alter(&$name, $account) {
 
   // Real name was loaded/generated via hook_user_load(), so re-use it.
   if (isset($account->realname)) {
-    if (Unicode::strlen($account->realname)) {
+    if (mb_strlen($account->realname)) {
       // Only if the real name is a non-empty string is $name actually altered.
       $name = $account->realname;
     }
@@ -151,7 +151,7 @@ function realname_user_view(array &$build, EntityInterface $account, EntityViewD
 /**
  * Loads a real name.
  *
- * @param object $account
+ * @param Drupal\user\Entity\User $account
  *   A user account object.
  *
  * @return mixed
@@ -193,7 +193,7 @@ function realname_load_multiple(array $accounts) {
 /**
  * Update the realname for a user account.
  *
- * @param object $account
+ * @param Drupal\user\Entity\User $account
  *   A user account object.
  *
  * @return string
@@ -238,7 +238,7 @@ function realname_update(User $account) {
     ->key(['uid' => $account->id()])
     ->fields([
       'realname' => $realname,
-      'created' => REQUEST_TIME,
+      'created' => \Drupal::time()->getRequestTime(),
     ])
     ->execute();
 

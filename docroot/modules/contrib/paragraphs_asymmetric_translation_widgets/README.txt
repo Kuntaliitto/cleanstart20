@@ -1,9 +1,9 @@
-Paragraphs asymmetric translation widgets
+Paragraphs Asymmetric Translation Widgets
 
 This module starts as a spin-off from this task:
 https://www.drupal.org/project/paragraphs/issues/2461695
 
-This module is still under development and you are adviced
+This module is still under development and you are advised
 to not use it on production environments.
 
 Installation:
@@ -39,8 +39,5 @@ functionality.
 This module starts with the latest patch that passed
 the tests and was reported to be working.
 
-* In order to use this module, you need to apply this patch
-to the paragraphs module: *
--- https://www.drupal.org/project/paragraphs/issues/2954875 --
-(until the patch gets committed)
-
+* In order to use this module, you need to use paragraphs
+ module version 1.3 or higher *

@@ -1,4 +1,9 @@
 
+Slick Media 8.x-1.0-dev, 2018-12-19
+-----------------------------------
+- Issue #2894468 by cbeier, webflo, ytsurk, zuernBernhard: Fix fatal error after
+  unpublishing media item.
+
 Slick Media 8.x-1.0-dev, 2017-02-13
 -----------------------------------
 - #2852030 by mtodor: Cleanup default configuration.

@@ -23,8 +23,9 @@ of additional files. You can check the current status of installation at
 /admin/reports/status or read below for further details on how to install
 each player.
 
-To install all external audio player libraries at once, you can run the drush
-command drush audiofield-download
+To install all external audio player libraries at once, you can run the Drush
+command drush audiofield-download (Drush 8) or drush audiofield:download (Drush
+9).
 
 Audio.js Audio Player
   Audio.js requires installation of the audio.js library located at
@@ -32,7 +33,8 @@ Audio.js Audio Player
   subfolder titled "audiojs" should be placed in /libraries/audiojs such that
   the file audio.min.js is found at /libraries/audiojs/.
 
-  Install through drush using command drush audiofield-download audiojs.
+  Install through drush using command drush audiofield-download audiojs
+  (Drush 8) or drush audiofield:download audiojs (Drush 9).
 
   Audio.js does not offer any theme options, but can be fully styled by custom
   CSS.
@@ -43,7 +45,8 @@ jPlayer Audio Player
   in /libraries/jplayer. It should be installed such that the file
   jquery.jplayer.min.js can be found at /libraries/jplayer/dist/jplayer/.
 
-  Install through drush using command drush audiofield-download jplayer.
+  Install through drush using command drush audiofield-download jplayer
+  (Drush 8) or drush audiofield:download jplayer (Drush 9).
 
   jPlayer comes bundled with multiple skins by default. You can install
   additional skins by placing them in /libraries/jplayer/dist/skin/ and
@@ -60,7 +63,8 @@ MediaElement Audio Player
   in /libraries/mediaelement such that the file mediaelement-and-player.min.js
   is found at /libraries/mediaelement/build/.
 
-  Install through drush using command drush audiofield-download mediaelement.
+  Install through drush using command drush audiofield-download mediaelement
+  (Drush 8) or drush audiofield:download mediaelement (Drush 9).
 
 Projekktor Audio Player
   Projekktor requires installation of the Projekktor library located at
@@ -73,7 +77,8 @@ Projekktor Audio Player
   projekktor-1.3.09.min.js at /libraries/projekktor/. This file will not exist
   unless the distribution has been properly compiled.
 
-  Install through drush using command drush audiofield-download projekktor.
+  Install through drush using command drush audiofield-download projekktor
+  (Drush 8) or drush audiofield:download projekktor (Drush 9).
 
 SoundManager Audio Player
   WordPress Audio Player requires installation of the SoundManager library
@@ -82,7 +87,8 @@ SoundManager Audio Player
   that the file soundmanager2-nodebug-jsmin.js can be found at
   /libraries/soundmanager/script/.
 
-  Install through drush using command drush audiofield-download soundmanager.
+  Install through drush using command drush audiofield-download soundmanager
+  (Drush 8) or drush audiofield:download soundmanager (Drush 9).
 
   SoundManager is a highly configurable library. However, handling and allowing
   for all of the possible configurations and implementations of SoundManager is
@@ -101,7 +107,8 @@ Wavesurfer Audio Player
   but there are small feature differences between the two to be aware of. The
   drush command will install the latest version.
 
-  Install through drush using command drush audiofield-download wavesurfer.
+  Install through drush using command drush audiofield-download waveplayer
+  (Drush 8) or drush audiofield:download waveplayer (Drush 9).
 
 WordPress Audio Player
   WordPress Audio Player requires installation of the Standalone version of
@@ -109,7 +116,8 @@ WordPress Audio Player
   These files should be downloaded and placed in /libraries/wordpress-audio such
   that the file audio-player.js can be found at /libraries/wordpress-audio.
 
-  Install through drush using command drush audiofield-download wordpress.
+  Install through drush using command drush audiofield-download wordpress
+  (Drush 8) or drush audiofield:download wordpress (Drush 9).
 
   WordPress Audio Player only supports a single skin, but does support a
   single audio player for multiple files. However, the multi-file version of

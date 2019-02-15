@@ -1,5 +1,74 @@
 # Change Log
 
+## [8.2.33](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.33) 2019-01-24
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.32...8.2.33)
+
+The scheduler content moderation integration module that we introduced with the last release now provides the required scheduler patch by itself.
+That means, that we had to remove the patch from the distribution, otherwise installation will fail.
+
+Additionally, we fix an update bug from the last release. While the update was correctly done in the release, the update was always marked as failed. To check, if your update
+was successful, you can take a look at your media entity form-displays. You should have the inline form mode on your media entities.
+For more information on this take a look at the corresponding drupal.org issue: https://www.drupal.org/project/thunder/issues/3027152
+
+No features have been added.
+
+- Fix [After update to 8.x-2.32 Pending Thunder updates message persists](https://www.drupal.org/project/thunder/issues/3027152)
+- Do [Move scheduler patch to integration module](https://www.drupal.org/project/thunder/issues/3027869)  
+
+## [8.2.32](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.32) 2019-01-17
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.31...8.2.32)
+
+With this release we fix a bug that might occur when using composer to update the AMP module dependencies and a drush import-config issue.
+The media edit pages get to look a lot nicer and the content moderation integration was tweaked a bit.
+
+- Fix [Call to a member function setDisplayOptions() on null (Drupal 8.7.x)](https://www.drupal.org/project/thunder/issues/3021430)
+- Fix [Error message saving translation](https://www.drupal.org/project/thunder/issues/3019638)
+- Fix [Password Policy module cannot be installed by drush config-import](https://www.drupal.org/project/thunder/issues/3025702)
+- Fix [The masterminds/html5 dependency gets updated to incompatible version](https://www.drupal.org/project/thunder/issues/3025743)
+- Do [Update and cleanup travis integration](https://www.drupal.org/project/thunder/issues/3021420)
+- Do [Structure media edit pages](https://www.drupal.org/project/thunder/issues/3018703)
+- Do [Add testing of deployment](https://www.drupal.org/project/thunder/issues/3025101)
+- Do [Use scheduler_content_moderation_integration](https://www.drupal.org/project/thunder/issues/3025705)
+
+## [8.2.31](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.31) 2018-12-18
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.30...8.2.31)
+
+We fixed and improved several topics regarding the content moderation feature and started to reorganize the distribution 
+in preparation for the alpha release of Thunder 3.0. No new features have been added.
+
+- Fix [Cannot update to thunder 8.2.30 with composer](https://www.drupal.org/project/thunder/issues/3019353)
+- Fix [WSOD on scheduled nodes after saving](https://www.drupal.org/project/thunder/issues/3018530)
+- Fix [Wrong access check for revision reset](https://www.drupal.org/project/thunder/issues/3019596)
+- Fix [As a restricted editor I am not be able to edit scheduled nodes](https://www.drupal.org/project/thunder/issues/3020284)
+- Do [Demo users should be also authors of demo nodes](https://www.drupal.org/project/thunder/issues/3008594)
+- Do [Move optional config from Thunder base modules into distro folder](https://www.drupal.org/project/thunder/issues/3018523)
+- Do [Add demo tags, that are connected to our articles](https://www.drupal.org/project/thunder/issues/3008589)
+- Do [Add a phpunit.xml.dist file to the profile](https://www.drupal.org/project/thunder/issues/3019694)
+- Do [Add config_profile as a dev dependency](https://www.drupal.org/project/thunder/issues/3019992)
+
+## [8.2.30](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.30) 2018-12-04
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.29...8.2.30)
+
+Thunder gets a password policy. It is not activated by default. If you want to use the password policy, you have to 
+enable the password policy module. 
+Additionally we fix some scheduler bugs with this release and restrict the restricted editor role even more. Finally
+some code cleanups have been made.
+
+- Add [Password policy](https://www.drupal.org/project/thunder/issues/2986591)
+- Fix [Scheduling to unpublish a node fails](https://www.drupal.org/project/thunder/issues/3016857)
+- Fix [Restricted editor has administrative permissions](https://www.drupal.org/project/thunder/issues/3013934)
+- Cleanup [Dependency namespacing in .info.yml file](https://www.drupal.org/project/thunder/issues/3005773)
+- Cleanup [Don't use a fallback image](https://www.drupal.org/project/thunder/issues/3016936)
+- Cleanup [WebDriverTestBase for Thunder JS Tests](https://www.drupal.org/project/thunder/issues/3016916)
+
+## [8.2.29](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.29) 2018-11-21
+[Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.28...8.2.29)
+
+Bugfix release.
+
+- Fix [AMP library not compatible with newest masterminds/html5](https://www.drupal.org/project/thunder/issues/3015230)
+- Fix [Article integration tests started to fail](https://www.drupal.org/project/thunder/issues/3012271)
+
 ## [8.2.28](https://github.com/BurdaMagazinOrg/thunder-distribution/tree/8.2.28) 2018-11-06
 [Full Changelog](https://github.com/BurdaMagazinOrg/thunder-distribution/compare/8.2.27...8.2.28)
 

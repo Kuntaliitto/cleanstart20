@@ -3,8 +3,9 @@
 namespace Behat\Mink\Tests;
 
 use Behat\Mink\Session;
+use PHPUnit\Framework\TestCase;
 
-class SessionTest extends \PHPUnit_Framework_TestCase
+class SessionTest extends TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -83,8 +84,36 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->session->restart();
     }
 
-    public function testVisit()
+    public function testVisitWithoutRunningSession()
     {
+        $this->driver
+            ->expects($this->once())
+            ->method('isStarted')
+            ->willReturn(false);
+
+        $this->driver
+            ->expects($this->once())
+            ->method('start');
+
+        $this->driver
+            ->expects($this->once())
+            ->method('visit')
+            ->with($url = 'some_url');
+
+        $this->session->visit($url);
+    }
+
+    public function testVisitWithRunningSession()
+    {
+        $this->driver
+            ->expects($this->once())
+            ->method('isStarted')
+            ->willReturn(true);
+
+        $this->driver
+            ->expects($this->never())
+            ->method('start');
+
         $this->driver
             ->expects($this->once())
             ->method('visit')

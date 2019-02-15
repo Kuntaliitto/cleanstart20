@@ -1,0 +1,17 @@
+{
+  "name": "drupal/scheduler_content_moderation_integration",
+  "type": "drupal-module",
+  "description": "Scheduler content moderation integration",
+  "license": "GPL-2.0-or-later",
+  "minimum-stability": "dev",
+  "require": {
+    "drupal/scheduler": "1.0"
+  },
+  "extra": {
+    "patches": {
+      "drupal/scheduler": {
+        "Scheduler integration with core Content moderation": "https://www.drupal.org/files/issues/2019-01-23/2798689-170-alternative-approach.patch"
+      }
+    }
+  }
+}

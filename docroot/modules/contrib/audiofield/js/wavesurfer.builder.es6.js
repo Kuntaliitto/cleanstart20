@@ -23,6 +23,18 @@
       // Create waveform.
       const wavesurfer = WaveSurfer.create({
         container: `#${$(wavecontainer).attr('id')} .waveform`,
+        audioRate: settings.audioRate,
+        autoCenter: settings.autoCenter,
+        barGap: settings.barGap,
+        barHeight: settings.barHeight,
+        barWidth: settings.barWidth,
+        cursorColor: settings.cursorColor,
+        cursorWidth: settings.cursorWidth,
+        forceDecode: settings.forceDecode,
+        normalize: settings.normalize,
+        progressColor: settings.progressColor,
+        responsive: settings.responsive,
+        waveColor: settings.waveColor,
       });
 
       // Load the file.
@@ -32,12 +44,12 @@
       wavesurfer.setVolume(settings.volume);
 
       // Handle play/pause.
-      $(wavecontainer).find('.player-button.playpause').on('click', () => {
+      $(wavecontainer).find('.player-button.playpause').on('click', (event) => {
         Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
       });
 
       // Handle volume change.
-      $(wavecontainer).find('.volume').on('change', () => {
+      $(wavecontainer).find('.volume').on('change', (event) => {
         wavesurfer.setVolume(($(event.currentTarget).val() / 10));
       });
 
@@ -61,6 +73,18 @@
       // Create waveform.
       const wavesurfer = WaveSurfer.create({
         container: `#${$(wavecontainer).attr('id')} .waveform`,
+        audioRate: settings.audioRate,
+        autoCenter: settings.autoCenter,
+        barGap: settings.barGap,
+        barHeight: settings.barHeight,
+        barWidth: settings.barWidth,
+        cursorColor: settings.cursorColor,
+        cursorWidth: settings.cursorWidth,
+        forceDecode: settings.forceDecode,
+        normalize: settings.normalize,
+        progressColor: settings.progressColor,
+        responsive: settings.responsive,
+        waveColor: settings.waveColor,
       });
 
       // Set the default volume.
@@ -77,28 +101,33 @@
       wavesurfer.load(first.attr('data-src'));
 
       // Handle play/pause.
-      $(wavecontainer).find('.player-button.playpause').on('click', () => {
+      $(wavecontainer).find('.player-button.playpause').on('click', (event) => {
         Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
       });
 
       // Handle next/previous.
-      $(wavecontainer).find('.player-button.next').on('click', () => {
+      $(wavecontainer).find('.player-button.next').on('click', (event) => {
         Drupal.AudiofieldWavesurfer.Next(wavecontainer, wavesurfer);
       });
-      $(wavecontainer).find('.player-button.previous').on('click', () => {
+      $(wavecontainer).find('.player-button.previous').on('click', (event) => {
         Drupal.AudiofieldWavesurfer.Previous(wavecontainer, wavesurfer);
       });
 
       // Handle clicking track.
-      $(wavecontainer).find('.playlist .track').on('click', () => {
-        // Load the track.
-        Drupal.AudiofieldWavesurfer.Load(wavecontainer, wavesurfer, $(event.currentTarget));
-        // Play the track.
-        Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
+      $(wavecontainer).find('.playlist .track').on('click', (event) => {
+        // Check if the track is already playing.
+        if ($(this).hasClass('playing')) {
+          // Play/pause the track if it is already loaded.
+          Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
+        }
+        else {
+          // Load the track.
+          Drupal.AudiofieldWavesurfer.Load(wavecontainer, wavesurfer, $(event.currentTarget));
+        }
       });
 
       // Handle volume change.
-      $(wavecontainer).find('.volume').on('change', () => {
+      $(wavecontainer).find('.volume').on('change', (event) => {
         wavesurfer.setVolume(($(event.currentTarget).val() / 10));
       });
 
@@ -108,7 +137,7 @@
       }
 
       // Handle track finishing.
-      wavesurfer.on('finish', () => {
+      wavesurfer.on('finish', (event) => {
         Drupal.AudiofieldWavesurfer.Next(wavecontainer, wavesurfer);
       });
     });
@@ -147,13 +176,13 @@
    */
   Drupal.AudiofieldWavesurfer.Load = (wavecontainer, wavesurfer, track) => {
     // Load the track.
-    wavesurfer.on('ready', () => {
-      wavesurfer.play();
+    wavesurfer.load(track.attr('data-src'));
+    wavesurfer.on('ready', (event) => {
       $(wavecontainer).removeClass('playing');
       $(wavecontainer).addClass('playing');
       $(wavecontainer).find('.player-button.playpause').html('Pause');
+      wavesurfer.play();
     });
-    wavesurfer.load(track.attr('data-src'));
     // Remove playing from all other tracks.
     $(wavecontainer).find('.track').removeClass('playing');
     // Set the class on this track.

@@ -11,8 +11,8 @@ dependencies:
   - drupal:views
   - drupal:block
 
-# Information added by Drupal.org packaging script on 2018-11-12
-version: '8.x-1.0'
+# Information added by Drupal.org packaging script on 2018-11-21
+version: '8.x-1.1'
 core: '8.x'
 project: 'select2'
-datestamp: 1542010688
+datestamp: 1542788885

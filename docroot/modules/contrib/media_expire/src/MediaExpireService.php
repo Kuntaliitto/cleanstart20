@@ -23,7 +23,7 @@ class MediaExpireService {
   /**
    * The query factory.
    *
-   * @var QueryFactory
+   * @var \Drupal\Core\Entity\Query\QueryFactory
    */
   protected $queryFactory;
 
@@ -32,7 +32,7 @@ class MediaExpireService {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
-   * @param QueryFactory $queryFactory
+   * @param \Drupal\Core\Entity\Query\QueryFactory $queryFactory
    *   The query factory service.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, QueryFactory $queryFactory) {
@@ -61,7 +61,7 @@ class MediaExpireService {
         $query->condition($expireField, date("Y-m-d\TH:i:s"), '<');
         $entityIds = $query->execute();
 
-        /** @var Media[] $medias */
+        /** @var \Drupal\media_entity\Entity\Media[] $medias */
         $medias = $this->entityTypeManager->getStorage('media')
           ->loadMultiple($entityIds);
 

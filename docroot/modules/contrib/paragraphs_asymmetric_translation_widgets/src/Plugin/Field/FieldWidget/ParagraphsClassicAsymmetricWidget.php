@@ -40,6 +40,7 @@ class ParagraphsClassicAsymmetricWidget extends InlineParagraphsWidget {
     $parents = $element['#field_parents'];
     $info = [];
 
+    /** @var \Drupal\paragraphs\ParagraphInterface $paragraphs_entity */
     $paragraphs_entity = NULL;
     $host = $items->getEntity();
     $widget_state = static::getWidgetState($parents, $field_name, $form_state);
@@ -108,7 +109,7 @@ class ParagraphsClassicAsymmetricWidget extends InlineParagraphsWidget {
       }
     }
 
-    if ($paragraphs_entity instanceof ParagraphInterface) {
+    if ($paragraphs_entity) {
       // Detect if we are translating.
       $this->initIsTranslating($form_state, $host);
       $langcode = $form_state->get('langcode');
@@ -178,6 +179,7 @@ class ParagraphsClassicAsymmetricWidget extends InlineParagraphsWidget {
       $element += array(
         '#type' => 'container',
         '#element_validate' => array(array($this, 'elementValidate')),
+        '#paragraph_type' => $paragraphs_entity->bundle(),
         'subform' => array(
           '#type' => 'container',
           '#parents' => $element_parents,
@@ -473,14 +475,38 @@ class ParagraphsClassicAsymmetricWidget extends InlineParagraphsWidget {
 
       if ($item_mode == 'edit') {
         $display->buildForm($paragraphs_entity, $element['subform'], $form_state);
+        $hide_untranslatable_fields = $paragraphs_entity->isDefaultTranslationAffectedOnly();
         foreach (Element::children($element['subform']) as $field) {
           if ($paragraphs_entity->hasField($field)) {
+            $field_definition = $paragraphs_entity->getFieldDefinition($field);
             $translatable = $paragraphs_entity->{$field}->getFieldDefinition()->isTranslatable();
-            if ($translatable) {
-              $element['subform'][$field]['widget']['#after_build'][] = [
-                static::class,
-                'removeTranslatabilityClue'
-              ];
+
+            // Do a check if we have to add a class to the form element. We need
+            // those classes (paragraphs-content and paragraphs-behavior) to show
+            // and hide elements, depending of the active perspective.
+            // We need them to filter out entity reference revisions fields that
+            // reference paragraphs, cause otherwise we have problems with showing
+            // and hiding the right fields in nested paragraphs.
+            $is_paragraph_field = FALSE;
+            if ($field_definition->getType() == 'entity_reference_revisions') {
+              // Check if we are referencing paragraphs.
+              if ($field_definition->getSetting('target_type') == 'paragraph') {
+                $is_paragraph_field = TRUE;
+              }
+            }
+
+            // Hide untranslatable fields when configured to do so except
+            // paragraph fields.
+            if (!$translatable && $this->isTranslating && !$is_paragraph_field) {
+              if ($hide_untranslatable_fields) {
+                $element['subform'][$field]['#access'] = FALSE;
+              }
+              else {
+                $element['subform'][$field]['widget']['#after_build'][] = [
+                  static::class,
+                  'addTranslatabilityClue'
+                ];
+              }
             }
           }
         }
@@ -684,7 +710,7 @@ class ParagraphsClassicAsymmetricWidget extends InlineParagraphsWidget {
       $elements['add_more'] = $this->buildAddActions();
     }
 
-    $elements['#attached']['library'][] = 'paragraphs/drupal.paragraphs.admin';
+    $elements['#attached']['library'][] = 'paragraphs_asymmetric_translation_widgets/drupal.paragraphs_asymmetric_translation_widgets.widget';
 
     return $elements;
   }

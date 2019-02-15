@@ -46,8 +46,6 @@ class LiveblogTest extends ThunderJavascriptTestBase {
 
   /**
    * Testing of module integration.
-   *
-   * @requires PHP 7.0
    */
   public function testWithPusher() {
     $pusherCredentials = json_decode(getenv('PUSHER_CREDENTIALS'), TRUE);
@@ -89,7 +87,7 @@ class LiveblogTest extends ThunderJavascriptTestBase {
     // Add liveblog node.
     $fieldValues = [
       'title[0][value]' => 'Test Liveblog',
-      'field_highlights[values][3]' => 'element',
+      'field_highlights[values][6]' => 'element',
       'field_posts_number_initial[0][value]' => '1',
     ];
 

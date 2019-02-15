@@ -36,7 +36,7 @@ class RealnameAdminSettingsForm extends ConfigFormBase {
     ];
 
     $note = '<div>';
-    $note .= t('Note that if it is changed, all current Realnames will be deleted and the list in the database will be rebuilt as needed.');
+    $note .= $this->t('Note that if it is changed, all current Realnames will be deleted and the list in the database will be rebuilt as needed.');
     $note .= '</div>';
 
     $form['general']['realname_pattern'] = [
@@ -74,7 +74,7 @@ class RealnameAdminSettingsForm extends ConfigFormBase {
     ];
     foreach ($tokens as $token) {
       if (strpos($pattern, $token) !== FALSE) {
-        $form_state->setErrorByName('realname_pattern', t('The %token token cannot be used as it will cause recursion.', ['%token' => $token]));
+        $form_state->setErrorByName('realname_pattern', $this->t('The %token token cannot be used as it will cause recursion.', ['%token' => $token]));
       }
     }
   }

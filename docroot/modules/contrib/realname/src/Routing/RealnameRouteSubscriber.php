@@ -9,6 +9,7 @@ use Symfony\Component\Routing\RouteCollection;
  * Subscriber for routes.
  */
 class RealnameRouteSubscriber extends RouteSubscriberBase {
+
   /**
    * {@inheritdoc}
    */
@@ -17,4 +18,5 @@ class RealnameRouteSubscriber extends RouteSubscriberBase {
       $route->setDefault('_controller', '\Drupal\realname\Controller\RealnameAutocompleteController::handleAutocomplete');
     }
   }
+
 }

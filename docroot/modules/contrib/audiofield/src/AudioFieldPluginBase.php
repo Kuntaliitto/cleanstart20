@@ -9,11 +9,62 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Random;
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\Asset\LibraryDiscovery;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Messenger\Messenger;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface ;
 
 /**
  * Base class for audiofield plugins. Includes global functions.
  */
-abstract class AudioFieldPluginBase extends PluginBase {
+abstract class AudioFieldPluginBase extends PluginBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Library discovery service.
+   *
+   * @var Drupal\Core\Asset\LibraryDiscovery
+   */
+  protected $libraryDiscovery;
+
+  /**
+   * Messenger service.
+   *
+   * @var Drupal\Core\Messenger\Messenger
+   */
+  protected $messenger;
+
+  /**
+   * Messenger service.
+   *
+   * @var Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerFactory;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, LibraryDiscovery $library_discovery, Messenger $messenger, LoggerChannelFactoryInterface  $logger_factory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->libraryDiscovery = $library_discovery;
+    $this->messenger = $messenger;
+    $this->loggerFactory = $logger_factory;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('library.discovery'),
+      $container->get('messenger'),
+      $container->get('logger.factory')
+    );
+  }
 
   /**
    * Renders the player.
@@ -68,7 +119,7 @@ abstract class AudioFieldPluginBase extends PluginBase {
    */
   public function getPluginLibrary() {
     // Get the main library for this plugin.
-    return \Drupal::service('library.discovery')->getLibraryByName('audiofield', 'audiofield.' . $this->getPluginLibraryName());
+    return $this->libraryDiscovery->getLibraryByName('audiofield', 'audiofield.' . $this->getPluginLibraryName());
   }
 
   /**
@@ -170,8 +221,8 @@ abstract class AudioFieldPluginBase extends PluginBase {
           '%command' => 'drush audiofield-update',
           '@status_report' => Link::createFromRoute('status report', 'system.status')->toString(),
         ];
-        \Drupal::logger('audiofield')->warning('Warning: @plugin library is out of date. You should upgrade from version @version to version @newversion. You can manually download the required version here: @download-link or you can install automatically by running the command %command. See the @status_report for more information', $message_data);
-        drupal_set_message(t('Warning: @plugin library is out of date. You should upgrade from version @version to version @newversion. You can manually download the required version here: @download-link or you can install automatically by running the command %command. See the @status_report for more information', $message_data), 'warning');
+        $this->loggerFactory->get('audiofield')->warning('Warning: @plugin library is out of date. You should upgrade from version @version to version @newversion. You can manually download the required version here: @download-link or you can install automatically by running the command %command. See the @status_report for more information', $message_data);
+        $this->messenger->addWarning(t('Warning: @plugin library is out of date. You should upgrade from version @version to version @newversion. You can manually download the required version here: @download-link or you can install automatically by running the command %command. See the @status_report for more information', $message_data));
       }
       return FALSE;
     }
@@ -186,8 +237,8 @@ abstract class AudioFieldPluginBase extends PluginBase {
       '@library_name' => $this->getPluginLibraryName(),
       '@status_report' => Link::createFromRoute('status report', 'system.status')->toString(),
     ];
-    \Drupal::logger('audiofield')->error('Error: @library_name library is not currently installed! See the @status_report for more information.', $message_data);
-    drupal_set_message(t('Error: @library_name library is not currently installed! See the @status_report for more information.', $message_data), 'error');
+    $this->loggerFactory->get('audiofield')->error('Error: @library_name library is not currently installed! See the @status_report for more information.', $message_data);
+    $this->messenger->addWarning(t('Error: @library_name library is not currently installed! See the @status_report for more information.', $message_data));
   }
 
   /**
@@ -208,8 +259,8 @@ abstract class AudioFieldPluginBase extends PluginBase {
         '@player' => $this->getPluginLibraryName(),
         '%extensions' => implode(', ', $this->pluginDefinition["fileTypes"]),
       ];
-      \Drupal::logger('audiofield')->error('Error playing file %filename: currently selected audio player only supports the following extensions: %extensions', $message_data);
-      drupal_set_message(t('Error playing file %filename: currently selected audio player only supports the following extensions: %extensions', $message_data), 'error');
+      $this->loggerFactory->get('audiofield')->error('Error playing file %filename: currently selected audio player only supports the following extensions: %extensions', $message_data);
+      $this->messenger->addWarning(t('Error playing file %filename: currently selected audio player only supports the following extensions: %extensions', $message_data));
       return FALSE;
     }
     return TRUE;
@@ -232,8 +283,8 @@ abstract class AudioFieldPluginBase extends PluginBase {
       $message_data = [
         '%link' => $link->toString(),
       ];
-      \Drupal::logger('audiofield')->error('Error playing file: invalid link: %link', $message_data);
-      drupal_set_message(t('Error playing file: invalid link: %link', $message_data), 'error');
+      $this->loggerFactory->get('audiofield')->error('Error playing file: invalid link: %link', $message_data);
+      $this->messenger->addWarning(t('Error playing file: invalid link: %link', $message_data));
       return FALSE;
     }
     return TRUE;
@@ -366,20 +417,19 @@ abstract class AudioFieldPluginBase extends PluginBase {
    *   The source URL of an entity.
    */
   private function getAudioSource($item) {
-    $source_url = '';
     if ($this->getClassType($item) == 'FileItem') {
       // Load the associated file.
       $file = $this->loadFileFromItem($item);
       // Get the file URL.
-      $source_url = Url::fromUri(file_create_url($file->getFileUri()));
+      return Url::fromUri(file_create_url($file->getFileUri()));
     }
     // Handle Link entity.
     elseif ($this->getClassType($item) == 'LinkItem') {
       // Get the file URL.
-      $source_url = $item->getUrl();
+      return $item->getUrl();
     }
 
-    return $source_url;
+    return '';
   }
 
   /**
@@ -392,7 +442,6 @@ abstract class AudioFieldPluginBase extends PluginBase {
    *   The description of an entity.
    */
   private function getAudioDescription($item) {
-    $entity_description = '';
     if ($this->getClassType($item) == 'FileItem') {
       // Get the file description - use the filename if it doesn't exist.
       $entity_description = $item->get('description')->getString();
@@ -400,19 +449,20 @@ abstract class AudioFieldPluginBase extends PluginBase {
         // Load the associated file.
         $file = $this->loadFileFromItem($item);
 
-        $entity_description = $file->getFilename();
+        return $file->getFilename();
       }
+      return $entity_description;
     }
     // Handle Link entity.
     elseif ($this->getClassType($item) == 'LinkItem') {
       // Get the file description - use the filename if it doesn't exist.
       $entity_description = $item->get('title')->getString();
       if (empty($entity_description)) {
-        $entity_description = $item->getUrl()->toString();
+        return $item->getUrl()->toString();
       }
+      return $entity_description;
     }
-
-    return $entity_description;
+    return '';
   }
 
   /**
@@ -476,51 +526,29 @@ abstract class AudioFieldPluginBase extends PluginBase {
    *   A render array containing download links.
    */
   public function createDownloadList($items, array $settings) {
-    $download_links = [];
-
-    // Check if download links are turned on.
-    if ($settings['download_link']) {
-      // Loop over each item.
-      foreach ($items as $item) {
-        // Get the source URL for this item.
-        $source_url = $this->getAudioSource($item);
-
-        // Get the entity description for this item.
-        $entity_description = $this->getAudioDescription($item);
-
-        // Add the link.
-        $download_links[] = [
-          '#markup' => Link::fromTextAndUrl($entity_description, $source_url)->toString(),
-          '#wrapper_attributes' => [
-            'class' => [
-              'audiofield-download-link',
-            ],
-          ],
-        ];
-      }
+    // Check if download links are turned on and there are items.
+    if (!$settings['download_link'] || count($items) == 0) {
+      return [];
     }
 
-    // Render links if we have them.
-    $download_render_array = [];
-    if (count($download_links) > 0) {
-      $download_render_array = [
-        '#theme' => 'item_list',
-        '#list_type' => 'ul',
-        '#title' => t('Download files:'),
-        '#wrapper_attributes' => [
-          'class' => [
-            'audiofield-downloads',
-          ],
-        ],
-        '#attributes' => [],
-        '#empty' => '',
-        '#items' => $download_links,
+    $links = [];
+    // Loop over each item.
+    foreach ($items as $item) {
+      // Get the source URL for this item.
+      $source_url = $this->getAudioSource($item);
+
+      // Get the entity description for this item.
+      $entity_description = $this->getAudioDescription($item);
+
+      // Add the link.
+      $links[] = [
+        'link' => Link::fromTextAndUrl($entity_description, $source_url)->toString(),
       ];
     }
 
     return [
       '#theme' => 'audiofield_download_links',
-      '#links' => $download_render_array,
+      '#links' => $links,
     ];
   }
 

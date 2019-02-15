@@ -505,6 +505,12 @@ abstract class KernelTestBase extends TestCase implements ServiceProviderInterfa
    */
   private function getExtensionsForModules(array $modules) {
     $extensions = [];
+
+    // Set directories to be ignored during filesystem scanning.
+    $settings = Settings::getAll();
+    $settings['file_scan_ignore_directories'] = explode(',', getenv('SIMPLETEST_IGNORE_DIRECTORIES'));
+    new Settings($settings);
+
     $discovery = new ExtensionDiscovery($this->root);
     $discovery->setProfileDirectories([]);
     $list = $discovery->scan('module');

@@ -127,7 +127,7 @@
           },
           swfPath: '/libraries/jplayer/dist/jplayer',
           wmode: 'window',
-          preload: settings.lazyload,
+          preload: file.lazyload,
           keyEnabled: true,
           supplied: file.filetype,
         },

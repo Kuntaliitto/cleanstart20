@@ -15,6 +15,30 @@ After that, Thunder is successfully installed. Start coding now.
 
 ----------
 
+## Update profile configuration
+
+The Thunder distributions ships the config_profile module as a dev
+dependency for easier config updates. The workflow for updating config
+files that are shipped in the distribution should be:
+* Install the latest dev version of Thunder
+* Enable the Config Profile module
+  ```
+  drush en config_profile
+  ```
+* Make all your changes in the UI
+* Export your configuration
+  ```
+  drush cex
+  ```
+  The configuration is exported to the chosen config_directory and simultaneously to your profile folder.
+* config_profile has now copied all the config changes to the profile
+folder
+* Put all new config files to the desired folder and add track it in git
+* Remove all untracked files
+  ```
+  git clean -fd
+  ```
+
 ## Drupal Tests
 
 Thunder distribution comes with a set of drupal tests. They can be used to validate Thunder installation or to use provided traits for your own project drupal tests.
@@ -53,6 +77,7 @@ composer require "behat/mink-selenium2-driver" "behat/mink-goutte-driver"
 ```
 
 After that drupal tests can be executed (if you are in ```docroot``` folder of Thunder installation and composer requirements are installed):
+
 ```bash
 php ./core/scripts/run-tests.sh --php '/usr/local/bin/php' --verbose --url http://thunder.dev --dburl mysql://drupaluser@127.0.0.1:3306/thunder Thunder
 ```
@@ -75,9 +100,9 @@ This is just an example. For better explanation see [Running PHPUnit tests](http
 
 Sometimes tests are executed inside docker container where selenium is running inside other containers and it's not possible to access it over localhost.
 Or there are cases when two separated containers are running on the same machine but on different ports (for example Chrome and Firefox selenium containers).
-For cases like this you can set environment variable `THUNDER_WEBDRIVER_HOST` in following way:
+For cases like this you can set environment variable `MINK_DRIVER_ARGS_WEBDRIVER` in following way:
 
-```export THUNDER_WEBDRIVER_HOST=selenium:4444```
+```export MINK_DRIVER_ARGS_WEBDRIVER='["chrome", null, "http://localhost:4444/wd/hub"]'```
 
 That information will be picked up by testing classes and used for selenium endpoint.
 
@@ -97,7 +122,6 @@ We support some test execution options. They can be provided in commit message i
 - TEST_UPDATE - allowed values: (true), this option will execute custom test path, where update (including execution of update hooks) from latest released version will be tested. This option should be used in case of pull request with update hooks or module update.
 - INSTALL_METHOD - allowed values: (drush_make, composer), this options overwrites default install method and it allows to test PHP 5.6 and 7.2 with same install method.
 - TEST_INSTALLER - allowed values: (true), this option will execute additional tests, that tests installation of Thunder with default language (English) and German. These tests require significant more time to be executed.
-- SAUCE_LABS_ENABLED - allowed values: (true), this option will execute tests on [Sauce Labs](https://saucelabs.com), where screenshots and videos of test executions are available for additional investigation of possible problems. This option significantly increases execution time of tests.
 
 Example to execute update test path:
 ```
