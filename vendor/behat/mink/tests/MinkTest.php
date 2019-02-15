@@ -3,8 +3,9 @@
 namespace Behat\Mink\Tests;
 
 use Behat\Mink\Mink;
+use PHPUnit\Framework\TestCase;
 
-class MinkTest extends \PHPUnit_Framework_TestCase
+class MinkTest extends TestCase
 {
     /**
      * @var Mink
@@ -67,36 +68,17 @@ class MinkTest extends \PHPUnit_Framework_TestCase
     {
         $session = $this->getSessionMock();
 
-        $session
-            ->expects($this->once())
-            ->method('isStarted')
-            ->will($this->returnValue(false));
-        $session
-            ->expects($this->once())
-            ->method('start');
-
         $this->mink->registerSession('mock_session', $session);
         $this->assertSame($session, $this->mink->getSession('mock_session'));
 
-        $this->setExpectedException('InvalidArgumentException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+        } else {
+            // BC with PHPUnit 4 used for PHP 5.5 and older
+            $this->setExpectedException('InvalidArgumentException');
+        }
 
         $this->mink->getSession('not_registered');
-    }
-
-    public function testGetAlreadyStartedSession()
-    {
-        $session = $this->getSessionMock();
-
-        $session
-            ->expects($this->once())
-            ->method('isStarted')
-            ->will($this->returnValue(true));
-        $session
-            ->expects($this->never())
-            ->method('start');
-
-        $this->mink->registerSession('mock_session', $session);
-        $this->assertSame($session, $this->mink->getSession('mock_session'));
     }
 
     public function testSetDefaultSessionName()
@@ -109,7 +91,12 @@ class MinkTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('session_name', $this->mink->getDefaultSessionName());
 
-        $this->setExpectedException('InvalidArgumentException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+        } else {
+            // BC with PHPUnit 4 used for PHP 5.5 and older
+            $this->setExpectedException('InvalidArgumentException');
+        }
 
         $this->mink->setDefaultSessionName('not_registered');
     }
@@ -140,7 +127,12 @@ class MinkTest extends \PHPUnit_Framework_TestCase
 
         $this->mink->registerSession('session_1', $session1);
 
-        $this->setExpectedException('InvalidArgumentException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+        } else {
+            // BC with PHPUnit 4 used for PHP 5.5 and older
+            $this->setExpectedException('InvalidArgumentException');
+        }
 
         $this->mink->getSession();
     }
@@ -172,7 +164,12 @@ class MinkTest extends \PHPUnit_Framework_TestCase
         $this->mink->registerSession('started', $session_2);
         $this->assertTrue($this->mink->isSessionStarted('started'));
 
-        $this->setExpectedException('InvalidArgumentException');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('InvalidArgumentException');
+        } else {
+            // BC with PHPUnit 4 used for PHP 5.5 and older
+            $this->setExpectedException('InvalidArgumentException');
+        }
 
         $this->mink->getSession('not_registered');
     }

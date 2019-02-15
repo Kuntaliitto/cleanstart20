@@ -234,6 +234,9 @@ class AssertTest extends PHPUnit_Framework_TestCase
             array('regex', array('abcd', '~^ab~'), true),
             array('regex', array('abcd', '~^bc~'), false),
             array('regex', array('', '~^bc~'), false),
+            array('notRegex', array('abcd', '{^ab}'), false),
+            array('notRegex', array('abcd', '{^bc}'), true),
+            array('notRegex', array('', '{^bc}'), true),
             array('alpha', array('abcd'), true),
             array('alpha', array('ab1cd'), false),
             array('alpha', array(''), false),
@@ -293,6 +296,8 @@ class AssertTest extends PHPUnit_Framework_TestCase
             array('classExists', array(__NAMESPACE__.'\Foobar'), false),
             array('subclassOf', array(__CLASS__, 'PHPUnit_Framework_TestCase'), true),
             array('subclassOf', array(__CLASS__, 'stdClass'), false),
+            array('interfaceExists', array('\Countable'), true),
+            array('interfaceExists', array(__CLASS__), false),
             array('implementsInterface', array('ArrayIterator', 'Traversable'), true),
             array('implementsInterface', array(__CLASS__, 'Traversable'), false),
             array('propertyExists', array((object) array('property' => 0), 'property'), true),
@@ -332,6 +337,14 @@ class AssertTest extends PHPUnit_Framework_TestCase
             array('countBetween', array(array(0, 1, 2), 4, 5), false),
             array('countBetween', array(array(0, 1, 2), 1, 2), false),
             array('countBetween', array(array(0, 1, 2), 2, 5), true),
+            array('isList', array(array(1, 2, 3)), true),
+            array('isList', array(array()), false),
+            array('isList', array(array(0 => 1, 2 => 3)), false),
+            array('isList', array(array('key' => 1, 'foo' => 2)), false),
+            array('isMap', array(array('key' => 1, 'foo' => 2)), true),
+            array('isMap', array(array()), false),
+            array('isMap', array(array(1, 2, 3)), false),
+            array('isMap', array(array(0 => 1, 2 => 3)), false),
             array('uuid', array('00000000-0000-0000-0000-000000000000'), true),
             array('uuid', array('ff6f8cb0-c57d-21e1-9b21-0800200c9a66'), true),
             array('uuid', array('ff6f8cb0-c57d-11e1-9b21-0800200c9a66'), true),
@@ -350,6 +363,42 @@ class AssertTest extends PHPUnit_Framework_TestCase
             array('throws', array(function() { trigger_error('test'); }, 'Throwable'), true, false, 70000),
             array('throws', array(function() { trigger_error('test'); }, 'Unthrowable'), false, false, 70000),
             array('throws', array(function() { throw new Error(); }, 'Throwable'), true, true, 70000),
+            array('ip', array('192.168.0.1'), true),
+            array('ip', array('255.255.255.255'), true),
+            array('ip', array('0.0.0.0'), true),
+            array('ip', array('2001:0db8:0000:0042:0000:8a2e:0370:7334'), true),
+            array('ip', array('::ffff:192.0.2.1'), true),
+            array('ip', array('::1'), true),
+            array('ip', array('::'), true),
+            array('ip', array('foo'), false),
+            array('ip', array(123), false),
+            array('ip', array(array()), false),
+            array('ip', array(null), false),
+            array('ip', array(false), false),
+            array('ipv4', array('192.168.0.1'), true),
+            array('ipv4', array('255.255.255.255'), true),
+            array('ipv4', array('0.0.0.0'), true),
+            array('ipv4', array('2001:0db8:0000:0042:0000:8a2e:0370:7334'), false),
+            array('ipv4', array('::ffff:192.0.2.1'), false),
+            array('ipv4', array('::1'), false),
+            array('ipv4', array('::'), false),
+            array('ipv4', array('foo'), false),
+            array('ipv4', array(123), false),
+            array('ipv4', array(array()), false),
+            array('ipv4', array(null), false),
+            array('ipv4', array(false), false),
+            array('ipv6', array('192.168.0.1'), false),
+            array('ipv6', array('255.255.255.255'), false),
+            array('ipv6', array('0.0.0.0'), false),
+            array('ipv6', array('2001:0db8:0000:0042:0000:8a2e:0370:7334'), true),
+            array('ipv6', array('::ffff:192.0.2.1'), true),
+            array('ipv6', array('::1'), true),
+            array('ipv6', array('::'), true),
+            array('ipv6', array('foo'),  false),
+            array('ipv6', array(123), false),
+            array('ipv6', array(array()), false),
+            array('ipv6', array(null), false),
+            array('ipv6', array(false), false),
         );
     }
 
@@ -474,6 +523,7 @@ class AssertTest extends PHPUnit_Framework_TestCase
             array('string', array(self::getResource()), 'Expected a string. Got: resource'),
 
             array('eq', array('1', '2'), 'Expected a value equal to "2". Got: "1"'),
+            array('eq', array(new ToStringClass("XXX"), new ToStringClass("YYY")), 'Expected a value equal to Webmozart\Assert\Tests\ToStringClass: "YYY". Got: Webmozart\Assert\Tests\ToStringClass: "XXX"'),
             array('eq', array(1, 2), 'Expected a value equal to 2. Got: 1'),
             array('eq', array(true, false), 'Expected a value equal to false. Got: true'),
             array('eq', array(true, null), 'Expected a value equal to null. Got: true'),
@@ -492,5 +542,26 @@ class AssertTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('\InvalidArgumentException', $exceptionMessage);
 
         call_user_func_array(array('Webmozart\Assert\Assert', $method), $args);
+    }
+}
+
+/**
+ * @ignore
+ */
+class ToStringClass {
+
+    /**
+     * @var string
+     */
+    private $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+
+    public function __toString()
+    {
+        return $this->value;
     }
 }

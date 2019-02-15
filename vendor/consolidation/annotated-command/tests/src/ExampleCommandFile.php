@@ -72,6 +72,26 @@ class ExampleCommandFile
     }
 
     /**
+     * Demonstrate use of Symfony $input object in Robo in place of
+     * the usual "parameter arguments".
+     *
+     * @param InputInterface $input
+     * @arg array $a A list of commandline parameters.
+     * @option foo
+     * @default a []
+     * @default foo []
+     */
+    public function testSymfony(InputInterface $input, OutputInterface $output)
+    {
+        $a = $input->getArgument('a');
+        $output->writeln("The parameters passed are:\n" . var_export($a, true));
+        $foo = $input->getOption('foo');
+        if (!empty($foo)) {
+            $output->writeln("The options passed via --foo are:\n" . var_export($foo, true));
+        }
+    }
+
+    /**
      * Code sniffer.
      *
      * Run the PHP Codesniffer on a file or directory.
@@ -93,7 +113,7 @@ class ExampleCommandFile
     }
 
     /**
-     * This is the my:cat command
+     * This is the my:echo command
      *
      * This command will concatenate two parameters. If the --flip flag
      * is provided, then the result is the concatenation of two and one.
@@ -106,7 +126,7 @@ class ExampleCommandFile
      *   Concatenate "alpha" and "bet".
      * @arbitrary This annotation is here merely as a marker used in testing.
      */
-    public function myCat($one, $two = '', array $options = ['flip' => false])
+    public function myEcho($one, $two = '', array $options = ['flip' => false])
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -162,6 +182,8 @@ class ExampleCommandFile
      * This command work with app's input and output
      *
      * @command command:with-io-parameters
+     * @param InputInterface $input
+     * @param OutputInterface $output
      */
     public function commandWithIOParameters(InputInterface $input, OutputInterface $output)
     {

@@ -3,8 +3,9 @@
 namespace Behat\Mink\Tests\Selector\Xpath;
 
 use Behat\Mink\Selector\Xpath\Manipulator;
+use PHPUnit\Framework\TestCase;
 
-class ManipulatorTest extends \PHPUnit_Framework_TestCase
+class ManipulatorTest extends TestCase
 {
     /**
      * @dataProvider getPrependedXpath
@@ -56,8 +57,13 @@ class ManipulatorTest extends \PHPUnit_Framework_TestCase
             ),
             'multiline' => array(
                 'some_xpath',
-                "some_tag1 | some_tag2[@foo =\n 'bar|'']\n | some_tag3[foo | bar]",
-                "some_xpath/some_tag1 | some_xpath/some_tag2[@foo =\n 'bar|''] | some_xpath/some_tag3[foo | bar]",
+                "some_tag1 | some_tag2[@foo =\n 'bar|']\n | some_tag3[foo | bar]",
+                "some_xpath/some_tag1 | some_xpath/some_tag2[@foo =\n 'bar|'] | some_xpath/some_tag3[foo | bar]",
+            ),
+            'containing pipe' => array(
+                'some_xpath',
+                "some_tag[(contains(normalize-space(string(.)), 'foo|bar') | other_tag[contains(./@some_attribute, 'foo|bar')])]",
+                "some_xpath/some_tag[(contains(normalize-space(string(.)), 'foo|bar') | other_tag[contains(./@some_attribute, 'foo|bar')])]",
             ),
         );
     }
