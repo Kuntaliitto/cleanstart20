@@ -102,6 +102,10 @@ abbr.tabledrag-changed, abbr.ajax-changed{
 }
 
 .form-item--error-message:before{
+  height:15px;
+  width:15px;
+  vertical-align:text-top;
+  margin-right:0.333em;
   background:url(../../images/icons/error.svg) no-repeat;
 }
 form{
@@ -109,11 +113,11 @@ form{
   padding:0;
 }
 
-@-moz-document url-prefix(){}.fieldgroup{
+.fieldgroup{
   min-width:0;
 }
 
-@-moz-document url-prefix(){
+@media (min--moz-device-pixel-ratio: 0){
   .fieldgroup{
     display:table-cell;
   }
@@ -309,10 +313,6 @@ select{
   }
 }
 
-#edit-cancel{
-  margin-left:10px;
-}
-
 [dir="rtl"] #edit-cancel{
   margin-left:0;
   margin-right:10px;
@@ -354,10 +354,6 @@ select{
     float:none;
     padding:0;
   }
-  #edit-cancel{
-    display:block;
-    margin:10px 0 0 0;
-  }
   select{
     width:100%;
   }
@@ -379,7 +375,7 @@ fieldset:not(.fieldgroup){
   min-width:0;
   position:relative;
 }
-@-moz-document url-prefix(){
+@media (min--moz-device-pixel-ratio: 0){
   .content-form__main > details,
   fieldset:not(.fieldgroup){
     display:table-cell;
@@ -493,7 +489,7 @@ textarea.form-textarea{
     padding:1px 1.571em 1px 0.5em;
     border:1px solid #dae0e3;
     border-radius:4px;
-    background:url(../../images/icons/caret-down.svg) no-repeat 99% 50% #FFFFFF;
+    background:url(../../images/icons/caret-down.svg) no-repeat 99% 50% #fff;
     color:#07364a;
     font-size:0.875rem;
   }
@@ -516,4 +512,19 @@ textarea.form-textarea{
 .filter-options select,
 #diff-inline-form select{
   padding:0;
+}
+.form-actions .button{
+  margin-left:0;
+  margin-right:1em;
+}
+
+.form-actions .button:last-child{
+  margin-right:0;
+}
+.container-inline .form-type-date:last-child{
+  margin-left:0.666em;
+}
+
+.form-item .file-size{
+  margin-left:0.316em;
 }
