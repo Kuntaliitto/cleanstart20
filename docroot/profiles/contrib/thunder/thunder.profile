@@ -321,6 +321,15 @@ function thunder_modules_installed($modules) {
 
     $field->save();
   }
+
+  // When enabling password policy, enabled required sub modules.
+  if (in_array('password_policy', $modules)) {
+    \Drupal::service('module_installer')->install(['password_policy_length']);
+    \Drupal::service('module_installer')->install(['password_policy_history']);
+    \Drupal::service('module_installer')->install(['password_policy_character_types']);
+    \Drupal::service('messenger')->addStatus(t('The Password Character Length, Password Policy History and Password Character Types modules have been additionally enabled, they are required by the default policy configuration.'));
+  }
+
 }
 
 /**
@@ -380,14 +389,13 @@ function thunder_entity_base_field_info_alter(&$fields, EntityTypeInterface $ent
   if (\Drupal::config('system.theme')->get('admin') == 'thunder_admin' && \Drupal::hasService('content_moderation.moderation_information')) {
     /** @var \Drupal\content_moderation\ModerationInformationInterface $moderation_info */
     $moderation_info = \Drupal::service('content_moderation.moderation_information');
-    if (!$moderation_info->canModerateEntitiesOfEntityType($entity_type)) {
-      return;
+    if ($moderation_info->canModerateEntitiesOfEntityType($entity_type) && isset($fields['moderation_state'])) {
+      $fields['moderation_state']->setDisplayOptions('form', [
+        'type' => 'thunder_moderation_state_default',
+        'weight' => 100,
+        'settings' => [],
+      ]);
     }
-    $fields['moderation_state']->setDisplayOptions('form', [
-      'type' => 'thunder_moderation_state_default',
-      'weight' => 100,
-      'settings' => [],
-    ]);
   }
 }
 
