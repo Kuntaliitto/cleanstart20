@@ -24,52 +24,6 @@ function menu_multilingual_block_view_menu_block_alter(array &$build) {
 
 /**
  * Implements hook_form_FORM_ID_alter().
- */
-function menu_multilingual_form_block_form_alter(&$form, FormStateInterface $form_state) {
-  /* @var \Drupal\block\Entity\Block $block; */
-  $block = $form_state->getFormObject()->getEntity();
-
-  $is_system_block = strpos($block->getPluginId(), 'system_menu_block');
-  $is_menu_block   = strpos($block->getPluginId(), 'menu_block');
-
-  if ($is_system_block === FALSE && $is_menu_block === FALSE) {
-    return FALSE;
-  }
-
-  $settings = $block->getThirdPartySettings('menu_multilingual');
-
-  $disabled_labels  = !Helpers::checkEntityType('menu_link_content');
-  $disabled_content = !Helpers::checkEntityType('node');
-
-  $multilingual = [
-    '#type'        => 'details',
-    '#open'        => TRUE,
-    '#title'       => t('Multilingual options'),
-    '#description' => t('Control visibility of menu items depending on their available translations.<br><strong>Notice:</strong> menu items with untranslated parents will also not be displayed.'),
-  ];
-
-  $multilingual['only_translated_labels'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Hide menu items without translated label'),
-    '#default_value' => isset($settings['only_translated_labels']) ? $settings['only_translated_labels'] : 0,
-    '#disabled' => $disabled_labels,
-  ];
-  $multilingual['only_translated_content'] = [
-    '#type' => 'checkbox',
-    '#title' => t('Hide menu items without translated content'),
-    '#default_value' => isset($settings['only_translated_content']) ? $settings['only_translated_content'] : 0,
-    '#disabled' => $disabled_content,
-  ];
-  $form['settings']['multilingual'] = $multilingual;
-
-  $form['#entity_builders'][] = [
-    'Drupal\menu_multilingual\Helpers',
-    'saveBlockSettings',
-  ];
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
  *
  * Applied for language_content_settings_form().
  */
@@ -90,5 +44,19 @@ function menu_multilingual_module_implements_alter(&$implementations, $hook) {
     $group = $implementations['menu_multilingual'];
     unset($implementations['menu_multilingual']);
     $implementations['menu_multilingual'] = $group;
+  }
+}
+
+/**
+ * Implements hook_block_alter().
+ */
+function menu_multilingual_block_alter(&$definitions) {
+  foreach ($definitions as $key => $definition) {
+    if (substr($key, 0, 18) == 'system_menu_block:') {
+      $definitions[$key]['class'] = 'Drupal\menu_multilingual\Plugin\Block\SystemMenuBlockMultilingual';
+    }
+    if (substr($key, 0, 11) == 'menu_block:') {
+      $definitions[$key]['class'] = 'Drupal\menu_multilingual\Plugin\Block\MenuBlockMultilingual';
+    }
   }
 }

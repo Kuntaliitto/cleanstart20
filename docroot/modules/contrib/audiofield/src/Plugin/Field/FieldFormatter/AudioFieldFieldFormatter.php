@@ -138,6 +138,140 @@ class AudioFieldFieldFormatter extends FormatterBase implements ContainerFactory
         ],
       ],
     ];
+    // Settings for WaveSurfer.
+    $elements['audio_player_wavesurfer_audiorate'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Audio Rate'),
+      '#description' => $this->t("Speed at which to play audio. Lower number is slower."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_audiorate'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_autocenter'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Auto Center'),
+      '#description' => $this->t("If a scrollbar is present, center the waveform around the progress."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_autocenter'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_bargap'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Bar Gap'),
+      '#description' => $this->t("The optional spacing between bars of the wave."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_bargap'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_barheight'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Bar Height'),
+      '#description' => $this->t("Height of the waveform bars. Higher number than 1 will increase the waveform bar heights."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_barheight'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_barwidth'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Bar Width'),
+      '#description' => $this->t("If specified, the waveform will be drawn like this: ▁ ▂ ▇ ▃ ▅ ▂"),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_barwidth'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_cursorcolor'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Cursor Color'),
+      '#description' => $this->t("The fill color of the cursor indicating the playhead position."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_cursorcolor'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_cursorwidth'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Cursor Width'),
+      '#description' => $this->t("Width of the cursor indicating the playhead position. Measured in pixels."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_cursorwidth'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_forcedecode'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Force Decode'),
+      '#description' => $this->t("Force decoding of audio using web audio when zooming to get a more detailed waveform."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_forcedecode'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_normalize'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Normalize'),
+      '#description' => $this->t("If checked, normalize by the maximum peak instead of 1.0."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_normalize'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_progresscolor'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Progress Color'),
+      '#description' => $this->t("The fill color of the part of the waveform behind the cursor."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_progresscolor'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_responsive'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Responsive'),
+      '#description' => $this->t("If checked, resize the waveform, when the window is resized. This is debounced with a 100ms timeout by default."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_responsive'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+    $elements['audio_player_wavesurfer_wavecolor'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Wave Color'),
+      '#description' => $this->t("The fill color of the waveform after the cursor."),
+      '#default_value' => $this->getSetting('audio_player_wavesurfer_wavecolor'),
+      '#states' => [
+        'visible' => [
+          [':input[name="fields[' . $fieldname . '][settings_edit_form][settings][audio_player]"]' => ['value' => 'wavesurfer_audio_player']],
+        ],
+      ],
+    ];
+
     // Settings for WordPress.
     // Only show when WordPress is the selected audio player.
     $elements['audio_player_wordpress_combine_files'] = [
@@ -291,6 +425,42 @@ class AudioFieldFieldFormatter extends FormatterBase implements ContainerFactory
       $summary[] = $this->t('Combine files into single player? <strong>@combine</strong>', [
         '@combine' => ($settings['audio_player_wavesurfer_combine_files'] ? 'Yes' : 'No'),
       ]);
+      $summary[] = $this->t('Audio Rate: <strong>@value</strong>', [
+        '@value' => $settings['audio_player_wavesurfer_audiorate'],
+      ]);
+      $summary[] = $this->t('Auto Center? <strong>@value</strong>', [
+        '@value' => ($settings['audio_player_wavesurfer_autocenter'] ? 'Yes' : 'No'),
+      ]);
+      $summary[] = $this->t('Bar Gap: <strong>@value</strong>', [
+        '@value' => $settings['audio_player_wavesurfer_bargap'],
+      ]);
+      $summary[] = $this->t('Bar Height: <strong>@value</strong>', [
+        '@value' => $settings['audio_player_wavesurfer_barheight'],
+      ]);
+      $summary[] = $this->t('Bar Width: <strong>@value</strong>', [
+        '@value' => $settings['audio_player_wavesurfer_barwidth'],
+      ]);
+      $summary[] = $this->t('Cursor Color: <span style="border:1px solid black;height:10px;width:10px;display:inline-block;background:@value;"></span>', [
+        '@value' => $settings['audio_player_wavesurfer_cursorcolor'],
+      ]);
+      $summary[] = $this->t('Cursor Width: <strong>@value</strong>', [
+        '@value' => $settings['audio_player_wavesurfer_cursorwidth'],
+      ]);
+      $summary[] = $this->t('Force Decode? <strong>@value</strong>', [
+        '@value' => ($settings['audio_player_wavesurfer_forcedecode'] ? 'Yes' : 'No'),
+      ]);
+      $summary[] = $this->t('Normalize? <strong>@value</strong>', [
+        '@value' => ($settings['audio_player_wavesurfer_normalize'] ? 'Yes' : 'No'),
+      ]);
+      $summary[] = $this->t('Progress Color: <span style="border:1px solid black;height:10px;width:10px;display:inline-block;background:@value;"></span>', [
+        '@value' => $settings['audio_player_wavesurfer_progresscolor'],
+      ]);
+      $summary[] = $this->t('Responsive? <strong>@value</strong>', [
+        '@value' => ($settings['audio_player_wavesurfer_responsive'] ? 'Yes' : 'No'),
+      ]);
+      $summary[] = $this->t('Wave Color: <span style="border:1px solid black;height:10px;width:10px;display:inline-block;background:@value;"></span>', [
+        '@value' => $settings['audio_player_wavesurfer_wavecolor'],
+      ]);
     }
     // If this is wordpress, add those settings.
     elseif ($settings['audio_player'] == 'wordpress_audio_player') {
@@ -384,6 +554,18 @@ class AudioFieldFieldFormatter extends FormatterBase implements ContainerFactory
       'audio_player' => 'default_mp3_player',
       'audio_player_jplayer_theme' => 'none',
       'audio_player_wavesurfer_combine_files' => FALSE,
+      'audio_player_wavesurfer_audiorate' => 1,
+      'audio_player_wavesurfer_autocenter' => TRUE,
+      'audio_player_wavesurfer_bargap' => 0,
+      'audio_player_wavesurfer_barheight' => 1,
+      'audio_player_wavesurfer_barwidth' => NULL,
+      'audio_player_wavesurfer_cursorcolor' => '#333',
+      'audio_player_wavesurfer_cursorwidth' => 1,
+      'audio_player_wavesurfer_forcedecode' => FALSE,
+      'audio_player_wavesurfer_normalize' => FALSE,
+      'audio_player_wavesurfer_progresscolor' => '#555',
+      'audio_player_wavesurfer_responsive' => FALSE,
+      'audio_player_wavesurfer_wavecolor' => '#999',
       'audio_player_wordpress_combine_files' => FALSE,
       'audio_player_wordpress_animation' => TRUE,
       'audio_player_soundmanager_theme' => 'default',

@@ -2,11 +2,9 @@
 
 namespace Drupal\ctools_views\Plugin\Display;
 
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\Block\ViewsBlock;
 use Drupal\views\Plugin\views\display\Block as CoreBlock;
-use Drupal\views\Plugin\views\filter\InOperator;
 
 /**
  * Provides a Block display plugin that allows for greater control over Views
@@ -43,26 +41,24 @@ class Block extends CoreBlock {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
-    switch ($form_state->get('section')) {
-      case 'allow':
-        $form['allow']['#options'] = [
-         'offset' => $this->t('Pager offset'),
-          'pager' => $this->t('Pager type'),
-          'hide_fields' => $this->t('Hide fields'),
-          'sort_fields' => $this->t('Reorder fields'),
-          'disable_filters' => $this->t('Disable filters'),
-          'configure_sorts' => $this->t('Configure sorts'),
-        ];
-        // Update the items_per_page if set.
-        $defaults = array_filter($form['allow']['#default_value']);
-        if (isset($defaults['items_per_page'])) {
-          $defaults['items_per_page'] = 'items_per_page';
-        }
-        break;
+    $options = $form['allow']['#options'];
+    $options['offset'] = $this->t('Pager offset');
+    $options['pager'] = $this->t('Pager type');
+    $options['hide_fields'] = $this->t('Hide fields');
+    $options['sort_fields'] = $this->t('Reorder fields');
+    $options['disable_filters'] = $this->t('Disable filters');
+    $options['configure_sorts'] = $this->t('Configure sorts');
+    $form['allow']['#options'] = $options;
+    // Update the items_per_page if set.
+    $defaults = [];
+    if (!empty($form['allow']['#default_value'])) {
+      $defaults = array_filter($form['allow']['#default_value']);
+      if (!empty($defaults['items_per_page'])) {
+        $defaults['items_per_page'] = 'items_per_page';
+      }
     }
-    if (isset($defaults)) {
-      $form['allow']['#default_value'] = $defaults;
-    }
+
+    $form['allow']['#default_value'] = $defaults;
   }
 
   /**
@@ -163,7 +159,7 @@ class Block extends CoreBlock {
        if (!empty($allow_settings['sort_fields'])) {
           $form['override']['order_fields'][$field_name]['#attributes']['class'][] = 'draggable';
         }
-        $form['override']['order_fields'][$field_name]['#weight'] = !empty($block_configuration['fields'][$field_name]['weight']) ? $block_configuration['fields'][$field_name]['weight'] : '';
+        $form['override']['order_fields'][$field_name]['#weight'] = !empty($block_configuration['fields'][$field_name]['weight']) ? $block_configuration['fields'][$field_name]['weight'] : 0;
         if (!empty($allow_settings['hide_fields'])) {
           $form['override']['order_fields'][$field_name]['hide'] = [
             '#type' => 'checkbox',

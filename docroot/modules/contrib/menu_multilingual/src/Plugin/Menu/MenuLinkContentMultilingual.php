@@ -14,6 +14,8 @@ class MenuLinkContentMultilingual extends MenuLinkContent {
   /**
    * Gets the language of the menu link.
    *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   *
    * @return string
    *   The language id.
    */
@@ -29,6 +31,8 @@ class MenuLinkContentMultilingual extends MenuLinkContent {
 
   /**
    * Retrieve the languages from translations of the menu link.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
    *
    * @return string
    *   The language ids.

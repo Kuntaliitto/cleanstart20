@@ -13,18 +13,30 @@
   Drupal.AudiofieldWavesurfer.generate = function (context, file, settings) {
     $.each($(context).find('#' + file.id).once('generate-waveform'), function (index, wavecontainer) {
       var wavesurfer = WaveSurfer.create({
-        container: '#' + $(wavecontainer).attr('id') + ' .waveform'
+        container: '#' + $(wavecontainer).attr('id') + ' .waveform',
+        audioRate: settings.audioRate,
+        autoCenter: settings.autoCenter,
+        barGap: settings.barGap,
+        barHeight: settings.barHeight,
+        barWidth: settings.barWidth,
+        cursorColor: settings.cursorColor,
+        cursorWidth: settings.cursorWidth,
+        forceDecode: settings.forceDecode,
+        normalize: settings.normalize,
+        progressColor: settings.progressColor,
+        responsive: settings.responsive,
+        waveColor: settings.waveColor
       });
 
       wavesurfer.load(file.path);
 
       wavesurfer.setVolume(settings.volume);
 
-      $(wavecontainer).find('.player-button.playpause').on('click', function () {
+      $(wavecontainer).find('.player-button.playpause').on('click', function (event) {
         Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
       });
 
-      $(wavecontainer).find('.volume').on('change', function () {
+      $(wavecontainer).find('.volume').on('change', function (event) {
         wavesurfer.setVolume($(event.currentTarget).val() / 10);
       });
 
@@ -37,7 +49,19 @@
   Drupal.AudiofieldWavesurfer.generatePlaylist = function (context, settings) {
     $.each($(context).find('#wavesurfer_playlist').once('generate-waveform'), function (index, wavecontainer) {
       var wavesurfer = WaveSurfer.create({
-        container: '#' + $(wavecontainer).attr('id') + ' .waveform'
+        container: '#' + $(wavecontainer).attr('id') + ' .waveform',
+        audioRate: settings.audioRate,
+        autoCenter: settings.autoCenter,
+        barGap: settings.barGap,
+        barHeight: settings.barHeight,
+        barWidth: settings.barWidth,
+        cursorColor: settings.cursorColor,
+        cursorWidth: settings.cursorWidth,
+        forceDecode: settings.forceDecode,
+        normalize: settings.normalize,
+        progressColor: settings.progressColor,
+        responsive: settings.responsive,
+        waveColor: settings.waveColor
       });
 
       wavesurfer.setVolume(settings.volume);
@@ -51,24 +75,27 @@
 
       wavesurfer.load(first.attr('data-src'));
 
-      $(wavecontainer).find('.player-button.playpause').on('click', function () {
+      $(wavecontainer).find('.player-button.playpause').on('click', function (event) {
         Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
       });
 
-      $(wavecontainer).find('.player-button.next').on('click', function () {
+      $(wavecontainer).find('.player-button.next').on('click', function (event) {
         Drupal.AudiofieldWavesurfer.Next(wavecontainer, wavesurfer);
       });
-      $(wavecontainer).find('.player-button.previous').on('click', function () {
+      $(wavecontainer).find('.player-button.previous').on('click', function (event) {
         Drupal.AudiofieldWavesurfer.Previous(wavecontainer, wavesurfer);
       });
 
-      $(wavecontainer).find('.playlist .track').on('click', function () {
-        Drupal.AudiofieldWavesurfer.Load(wavecontainer, wavesurfer, $(event.currentTarget));
-
-        Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
+      $(wavecontainer).find('.playlist .track').on('click', function (event) {
+        if ($(this).hasClass('playing')) {
+          Drupal.AudiofieldWavesurfer.PlayPause(wavecontainer, wavesurfer);
+        }
+        else {
+          Drupal.AudiofieldWavesurfer.Load(wavecontainer, wavesurfer, $(event.currentTarget));
+        }
       });
 
-      $(wavecontainer).find('.volume').on('change', function () {
+      $(wavecontainer).find('.volume').on('change', function (event) {
         wavesurfer.setVolume($(event.currentTarget).val() / 10);
       });
 
@@ -76,7 +103,7 @@
         wavesurfer.on('ready', wavesurfer.play.bind(wavesurfer));
       }
 
-      wavesurfer.on('finish', function () {
+      wavesurfer.on('finish', function (event) {
         Drupal.AudiofieldWavesurfer.Next(wavecontainer, wavesurfer);
       });
     });
@@ -95,13 +122,13 @@
   };
 
   Drupal.AudiofieldWavesurfer.Load = function (wavecontainer, wavesurfer, track) {
-    wavesurfer.on('ready', function () {
-      wavesurfer.play();
+    wavesurfer.load(track.attr('data-src'));
+    wavesurfer.on('ready', function (event) {
       $(wavecontainer).removeClass('playing');
       $(wavecontainer).addClass('playing');
       $(wavecontainer).find('.player-button.playpause').html('Pause');
+      wavesurfer.play();
     });
-    wavesurfer.load(track.attr('data-src'));
 
     $(wavecontainer).find('.track').removeClass('playing');
 

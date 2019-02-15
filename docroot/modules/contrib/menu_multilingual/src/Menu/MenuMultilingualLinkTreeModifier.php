@@ -1,7 +1,7 @@
 <?php
 
 namespace Drupal\menu_multilingual\Menu;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
+
 use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent;
 use Drupal\views\Plugin\Menu\ViewsMenuLink;
 
@@ -31,6 +31,8 @@ class MenuMultilingualLinkTreeModifier {
    * @param array $build
    *   The block render-able array.
    *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *
    * @return array
    *   The modified render-able array.
    */
@@ -42,10 +44,10 @@ class MenuMultilingualLinkTreeModifier {
     $tree = $this->filtersLinks($tree);
     // Hide block if there are no menu items.
     if (empty($tree)) {
-      $build = array(
+      $build = [
         '#markup' => '',
-        '#cache' => $build['#cache'],
-      );
+        '#cache'  => $build['#cache'],
+      ];
     }
     return $build;
   }
@@ -55,6 +57,8 @@ class MenuMultilingualLinkTreeModifier {
    *
    * @param array $tree
    *   The already built menu tree.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *
    * @return array
    *   The new menu tree.
@@ -78,6 +82,8 @@ class MenuMultilingualLinkTreeModifier {
    *
    * @param mixed $link
    *   The menu link plugin instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *
    * @return bool
    *   True if link pass a multilingual options.
@@ -127,9 +133,8 @@ class MenuMultilingualLinkTreeModifier {
     $result = FALSE;
 
     $callbacks = [
-      'noMethodGetLanguage',
       'isTranslatedMenuLinkContentMultilingual',
-      'isTranslatedViewLink'
+      'isTranslatedViewLink',
     ];
 
     foreach ($callbacks as $condition) {
@@ -151,6 +156,8 @@ class MenuMultilingualLinkTreeModifier {
    *   The link that will be checked.
    * @param string $lang
    *   The language id.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *
    * @return bool
    *   True if link pass a multilingual options.
@@ -251,6 +258,8 @@ class MenuMultilingualLinkTreeModifier {
    * @param string $lang
    *   The language id.
    *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *
    * @return bool
    *   True if link is MenuLinkContent and has translation.
    */
@@ -259,28 +268,19 @@ class MenuMultilingualLinkTreeModifier {
     if (!($link instanceof MenuLinkContent)) {
       return NULL;
     }
-    /* @var $link \Drupal\menu_multilingual\Plugin\Menu\MenuLinkContentMultilingual */
-    if ($lang == $link->getLanguage()) {
-      $result = TRUE;
+    $storage = \Drupal::entityTypeManager()->getStorage('menu_link_content');
+    if (!empty($link->getPluginDefinition()['metadata']['entity_id'])) {
+      $entity_id = $link->getPluginDefinition()['metadata']['entity_id'];
+      $entity = $storage->load($entity_id);
+      $langcode_key = $entity->getEntityType()->getKey('langcode');
+      if ($lang == $entity->get($langcode_key)->value) {
+        $result = TRUE;
+      }
+      elseif ($this->entityHasTranslation($entity, $lang)) {
+        $result = TRUE;
+      }
     }
-    elseif ($this->entityHasTranslation($link, $lang)) {
-      $result = TRUE;
-    }
-
     return $result;
-  }
-
-  /**
-   * Check if link do not has "getLanguage" method.
-   *
-   * @param mixed $link
-   *   The link that will be checked.
-   *
-   * @return bool
-   *   True if link is MenuLinkContent and has translation.
-   */
-  private static function noMethodGetLanguage($link) {
-    return !method_exists($link, 'getLanguage') ? TRUE : NULL;
   }
 
 }

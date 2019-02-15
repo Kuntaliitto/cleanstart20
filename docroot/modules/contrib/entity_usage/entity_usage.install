@@ -26,7 +26,8 @@ function entity_usage_schema() {
         'description' => 'The target ID, when the entity uses string IDs.',
         'type' => 'varchar_ascii',
         'length' => 128,
-        'not null' => FALSE,
+        'not null' => TRUE,
+        'default' => '',
       ],
       'target_type' => [
         'description' => 'The target entity type.',
@@ -93,6 +94,7 @@ function entity_usage_schema() {
     ],
     'primary key' => [
       'target_id',
+      'target_id_string',
       'target_type',
       'source_id',
       'source_type',
@@ -239,4 +241,11 @@ function entity_usage_post_update_regenerate_2x(&$sandbox) {
   return t('Finished generating statistics for @total_count entities.', [
     '@total_count' => $sandbox['total'],
   ]);
+}
+
+/**
+ * Include "target_id_string" also as primary key in schema.
+ */
+function entity_usage_update_8203(&$sandbox) {
+  // Left empty on purpose.
 }

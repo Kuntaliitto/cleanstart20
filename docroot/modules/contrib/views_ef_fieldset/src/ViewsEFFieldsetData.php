@@ -1,77 +1,66 @@
 <?php
-/**
- * @file
- * ViewsEFFieldsetData class file.
- */
+
+declare(strict_types = 1);
 
 namespace Drupal\views_ef_fieldset;
 
 use RecursiveIteratorIterator;
 
 /**
- * Class ViewsEFFieldsetData
+ * Class ViewsEFFieldsetData.
  */
 class ViewsEFFieldsetData {
 
   /**
-   * @param array $elements
-   * @param array $form
-   * @param array $resulting_array
+   * The data.
+   *
+   * @var array
    */
-  function __construct(array $data, array &$form = array()) {
+  private $data;
+
+  /**
+   * The element.
+   *
+   * @var array
+   */
+  private $elements;
+
+  /**
+   * The form.
+   *
+   * @var array
+   */
+  private $form;
+
+  /**
+   * ViewsEFFieldsetData constructor.
+   *
+   * @param array $data
+   *   The data.
+   * @param array $form
+   *   The form.
+   */
+  public function __construct(array $data, array &$form = []) {
     $this->data = $data;
     $this->elements = $data;
     $this->form = &$form;
   }
 
   /**
-   * @param $elements
+   * Build a flat array.
+   *
    * @return array
-   */
-  public function buildTreeData() {
-    return $this->parseTree($this->elements);
-  }
-
-  /**
-   * @param array $elements
-   * @param string $parentId
-   * @param int $depth
-   * @return array
-   */
-  private function parseTree(array &$elements, $rootParentID = '', $depth = -1) {
-    $branch = array();
-    $depth++;
-
-    foreach ($elements as $key => $element) {
-      $element['depth'] = $depth;
-      if ($element['pid'] != $rootParentID) {
-        continue;
-      }
-      $branch[] = array(
-        'item' => $element,
-        'children' => $this->parseTree($elements, $element['id'], $depth)
-      );
-    }
-
-    // Automatically get sorted results.
-    usort($branch, array($this, 'sortByWeight'));
-
-    return empty($branch) ? array() : $branch;
-  }
-
-  /**
-   * @param array $tree
-   * @return array
+   *   The flatten array.
    */
   public function buildFlat() {
-    $data = array();
+    $data = [];
 
     $recursive_iter_iter = new RecursiveIteratorIterator(
       new ArrayDataItemIterator($this->buildTreeData()),
       RecursiveIteratorIterator::SELF_FIRST
     );
 
-    foreach($recursive_iter_iter as $item) {
+    foreach ($recursive_iter_iter as $item) {
       $item['item']['depth'] = $recursive_iter_iter->getDepth();
       $data[] = $item;
     }
@@ -80,90 +69,157 @@ class ViewsEFFieldsetData {
   }
 
   /**
-   * Internal function used to sort array items by weight.
+   * Built the tree data.
+   *
+   * @return array
+   *   The tree data.
    */
-  private function sortByWeight($a, $b) {
-    if ($a['item']['weight'] == $b['item']['weight']) {
-      return 0;
-    }
-    return ($a['item']['weight'] < $b['item']['weight'] ? -1 : 1);
+  public function buildTreeData() {
+    return $this->parseTree($this->elements);
   }
 
-  public function treeToFAPI() {
-    $elements = array();
+  /**
+   * Convert the tree data into form api data.
+   *
+   * @return array
+   *   The array of elements.
+   */
+  public function treetofapi() {
+    $elements = [];
 
-    $this->recursiveTreeToFAPI($this->buildTreeData(), $this->form, $elements);
+    $this->recursivetreetofapi($this->buildTreeData(), $this->form, $elements);
 
     return $elements;
   }
 
   /**
-   * @param $data
-   * @param $form
-   * @param array $element
+   * Parse the tree.
+   *
+   * @param array $elements
+   *   The elements.
+   * @param string $rootParentID
+   *   The root parent ID.
+   * @param int $depth
+   *   The depth.
+   *
+   * @return array
+   *   The array.
    */
-  private function recursiveTreeToFAPI($data, &$form, &$element = array()) {
-    foreach($data as $key => $item) {
+  private function parseTree(array &$elements, $rootParentID = '', $depth = -1) {
+    $branch = [];
+    $depth++;
 
-      // If it's a filter field
-      if ($item['item']['type'] == 'filter') {
-        $field_name = $form['#info']['filter-' . $item['item']['id']]['value'];
+    foreach ($elements as $key => $element) {
+      $element['depth'] = $depth;
+      if ($element['pid'] !== $rootParentID) {
+        continue;
+      }
+      $branch[] = [
+        'item' => $element,
+        'children' => $this->parseTree($elements, $element['id'], $depth),
+      ];
+    }
 
-        if(isset($form[$field_name]) && is_array($form[$field_name])) {
+    // Automatically get sorted results.
+    usort($branch, [$this, 'sortByWeight']);
+
+    return empty($branch) ? [] : $branch;
+  }
+
+  /**
+   * Tree to FAPI recursive.
+   *
+   * @param array $data
+   *   The data.
+   * @param array $form
+   *   The form.
+   * @param array $element
+   *   The element.
+   */
+  private function recursivetreetofapi(array $data, array &$form, array &$element = []) {
+    foreach ($data as $key => $item) {
+
+      // If it's a filter field.
+      if ($item['item']['type'] === 'filter') {
+        $field_name = isset($form['#info']['filter-' . $item['item']['id']]) ?
+          $form['#info']['filter-' . $item['item']['id']]['value'] :
+          '';
+
+        if (isset($form[$field_name]) && is_array($form[$field_name])) {
           $element[$field_name] = $form[$field_name] +
-            array(
+            [
               '#weight' => $item['item']['weight'],
               '#title' => $form['#info']['filter-' . $item['item']['id']]['label'],
               '#description' => $form['#info']['filter-' . $item['item']['id']]['description'],
-            );
+            ];
           unset($form['#info']['filter-' . $item['item']['id']]);
           unset($form[$field_name]);
         }
       }
 
-      // If it's a sort field
-      if ($item['item']['type'] == 'sort') {
+      // If it's a sort field.
+      if ($item['item']['type'] === 'sort') {
         $field_name = $item['item']['id'];
 
-        if(isset($form[$field_name]) && is_array($form[$field_name])) {
+        if (isset($form[$field_name]) && is_array($form[$field_name])) {
           $element[$field_name] = $form[$field_name];
           $element[$field_name]['#weight'] = $item['item']['weight'];
           unset($form[$field_name]);
         }
       }
 
-      // If it's the action buttons
-      if ($item['item']['type'] == 'buttons') {
+      // If it's the action buttons.
+      if ($item['item']['type'] === 'buttons') {
         $field_name = $item['item']['id'];
 
-        if(isset($form['actions'][$field_name]) && is_array($form['actions'][$field_name])) {
+        if (isset($form['actions'][$field_name]) && is_array($form['actions'][$field_name])) {
           $button = $form['actions'][$field_name];
           $button['#weight'] = $item['item']['weight'];
           $button['#access'] = TRUE;
           $element[$field_name] = $button;
           $form['actions'][$field_name]['#attributes']['style'][] = 'display:none;';
-          //unset($form['actions'][$field_name]);
+          // unset($form['actions'][$field_name]);.
         }
       }
 
-      if (!empty($item['children']) && $item['item']['type'] == 'container') {
-        $element['container-' . $item['item']['id']] = array(
+      if (!empty($item['children']) && $item['item']['type'] === 'container') {
+        $element['container-' . $item['item']['id']] = [
           '#type' => $item['item']['container_type'],
-          '#title' => t($item['item']['title']),
+          '#title' => t('@title', ['@title' => $item['item']['title']]),
           '#group' => 'container-' . $item['item']['pid'],
-          '#description' => t($item['item']['description']),
+          '#description' => t('@description', ['@description' => $item['item']['description']]),
           '#open' => (bool) $item['item']['open'],
-          '#attributes' => array(
-            'class' => array(
+          '#attributes' => [
+            'class' => [
               'views-ef-fieldset-container',
-              'views-ef-fieldset-' . $item['item']['id']
-            )
-          ),
-          '#weight' => $item['item']['weight']
-        );
-        $element['container-' . $item['item']['id']]['children'] = array();
-        $this->recursiveTreeToFAPI($item['children'], $form, $element['container-'.$item['item']['id']]['children']);
+              'views-ef-fieldset-' . $item['item']['id'],
+            ],
+          ],
+          '#weight' => $item['item']['weight'],
+        ];
+        $element['container-' . $item['item']['id']]['children'] = [];
+        $this->recursivetreetofapi($item['children'], $form, $element['container-' . $item['item']['id']]['children']);
       }
     }
   }
+
+  /**
+   * Internal function used to sort array items by weight.
+   *
+   * @param array $a
+   *   First element.
+   * @param array $b
+   *   Second element.
+   *
+   * @return int
+   *   The weight.
+   */
+  private function sortByWeight(array $a, array $b) {
+    if ($a['item']['weight'] === $b['item']['weight']) {
+      return 0;
+    }
+
+    return ($a['item']['weight'] < $b['item']['weight'] ? -1 : 1);
+  }
+
 }

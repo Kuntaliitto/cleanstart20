@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\menu_multilingual\Menu\MenuMultilingualLinkTreeModifier;
 
 /**
- * Various fucntions to assis menu_mutilingual block.
+ * Various functions to assist menu_multilingual block.
  */
 class Helpers {
 
@@ -15,7 +15,7 @@ class Helpers {
    * Enable menu_multilingual block processing.
    */
   public static function setBlockProcessing(&$build) {
-    $settings = $build['#block']->getThirdPartySettings('menu_multilingual');
+    $settings = $build['#configuration'];
 
     if (!empty($settings['only_translated_labels']) || !empty($settings['only_translated_content'])) {
       $modifier = new MenuMultilingualLinkTreeModifier(
@@ -53,7 +53,7 @@ class Helpers {
   }
 
   /**
-   * Check entity type for transaltion capabilities.
+   * Check entity type for translation capabilities.
    */
   public static function checkEntityType($type) {
     /* @var \Drupal\content_translation\ContentTranslationManager $translationManager */

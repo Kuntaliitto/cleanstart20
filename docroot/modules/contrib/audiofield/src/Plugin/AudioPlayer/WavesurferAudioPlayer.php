@@ -45,6 +45,18 @@ class WavesurferAudioPlayer extends AudioFieldPluginBase {
       'volume' => ($settings['audio_player_initial_volume'] / 10),
       'playertype' => ($settings['audio_player_wavesurfer_combine_files'] ? 'playlist' : 'default'),
       'files' => [],
+      'audioRate' => $settings['audio_player_wavesurfer_audiorate'],
+      'autoCenter' => $settings['audio_player_wavesurfer_autocenter'],
+      'barGap' => $settings['audio_player_wavesurfer_bargap'],
+      'barHeight' => $settings['audio_player_wavesurfer_barheight'],
+      'barWidth' => $settings['audio_player_wavesurfer_barwidth'],
+      'cursorColor' => $settings['audio_player_wavesurfer_cursorcolor'],
+      'cursorWidth' => $settings['audio_player_wavesurfer_cursorwidth'],
+      'forceDecode' => $settings['audio_player_wavesurfer_forcedecode'],
+      'normalize' => $settings['audio_player_wavesurfer_normalize'],
+      'progressColor' => $settings['audio_player_wavesurfer_progresscolor'],
+      'responsive' => $settings['audio_player_wavesurfer_responsive'],
+      'waveColor' => $settings['audio_player_wavesurfer_wavecolor'],
       'autoplay' => $settings['audio_player_autoplay'],
     ];
 
