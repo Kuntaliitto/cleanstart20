@@ -6,6 +6,6 @@ Source: https://www.drupal.org/files/issues/2475595-ctools-autocomplete-fix-24.p
 
 
 Block.php notices and warnings
-Source: https://www.drupal.org/files/issues/fixblockpager-2820783-21.patch
+Source: https://www.drupal.org/files/issues/2019-02-11/ctools-Block.php_notices_and_warnings-2820783-48-D8.patch
 
 

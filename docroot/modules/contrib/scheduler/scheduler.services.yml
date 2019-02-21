@@ -1,7 +1,7 @@
 services:
   scheduler.manager:
     class: Drupal\scheduler\SchedulerManager
-    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity_type.manager', '@config.factory', '@entity_field.manager', '@?content_moderation.moderation_information']
+    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity.manager', '@config.factory', '@?content_moderation.moderation_information']
   logger.channel.scheduler:
     class: Drupal\Core\Logger\LoggerChannel
     factory: logger.factory:get

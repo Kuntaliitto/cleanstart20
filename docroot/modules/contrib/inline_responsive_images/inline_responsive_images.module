@@ -94,7 +94,7 @@ function inline_responsive_images_form_editor_image_dialog_alter(&$form, FormSta
     }
 
     $form['#attached']['library'][] = 'image/admin';
-    $form['actions']['save_modal']['#validate'][] = 'inline_responsive_images_form_editor_image_dialog_imagestyle_validate';
+    $form['actions']['save_modal']['#validate'] = ['inline_responsive_images_form_editor_image_dialog_imagestyle_validate'];
   }
 
   // When responsive image functionality is available, disallow the user from
@@ -189,7 +189,7 @@ function inline_responsive_images_form_editor_image_dialog_alter(&$form, FormSta
       }
     }
 
-    $form['actions']['save_modal']['#validate'][] = 'inline_responsive_images_form_editor_image_dialog_responsive_validate';
+    $form['actions']['save_modal']['#validate'] = ['inline_responsive_images_form_editor_image_dialog_responsive_validate'];
   }
 }
 

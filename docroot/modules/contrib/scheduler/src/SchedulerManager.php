@@ -5,10 +5,10 @@ namespace Drupal\scheduler;
 use Drupal\content_moderation\ModerationInformationInterface;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Datetime\DateFormatter;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Url;
+use Drupal\Core\Extension\ModuleHandler;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\scheduler\Exception\SchedulerMissingDateException;
 use Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException;
@@ -48,18 +48,11 @@ class SchedulerManager {
   protected $schedulerModerationEnabled;
 
   /**
-   * The entity field manager.
+   * Entity Manager service object.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   * @var \Drupal\Core\Entity\EntityManager
    */
-  protected $entityFieldManager;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
+  protected $entityManager;
 
   /**
    * Moderation information service.
@@ -78,13 +71,12 @@ class SchedulerManager {
   /**
    * Constructs a SchedulerManager object.
    */
-  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityTypeManagerInterface $entityTypeManager, ConfigFactory $configFactory, EntityFieldManagerInterface $entityFieldManager, ModerationInformationInterface $moderationInformation = NULL) {
+  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityManager $entityManager, ConfigFactory $configFactory, ModerationInformationInterface $moderationInformation = NULL) {
     $this->dateFormatter = $dateFormatter;
     $this->logger = $logger;
     $this->moduleHandler = $moduleHandler;
-    $this->entityTypeManager = $entityTypeManager;
+    $this->entityManager = $entityManager;
     $this->configFactory = $configFactory;
-    $this->entityFieldManager = $entityFieldManager;
     $this->moderationInfo = $moderationInformation;
     $this->schedulerModerationEnabled = $this->moduleHandler->moduleExists('scheduler_content_moderation_integration');
   }
@@ -97,8 +89,6 @@ class SchedulerManager {
    *
    * @throws \Drupal\scheduler\Exception\SchedulerMissingDateException
    * @throws \Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function publish() {
     // @TODO: \Drupal calls should be avoided in classes.
@@ -114,7 +104,9 @@ class SchedulerManager {
     $nids = [];
     $scheduler_enabled_types = array_keys(_scheduler_get_scheduler_enabled_node_types($action));
     if (!empty($scheduler_enabled_types)) {
-      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      // @TODO: \Drupal calls should be avoided in classes.
+      // Replace \Drupal::entityQuery with dependency injection?
+      $query = \Drupal::entityQuery('node')
         ->exists('publish_on')
         ->condition('publish_on', REQUEST_TIME, '<=')
         ->condition('type', $scheduler_enabled_types, 'IN')
@@ -150,7 +142,6 @@ class SchedulerManager {
       $languages = $node_multilingual->getTranslationLanguages();
       foreach ($languages as $language) {
         // The object returned by getTranslation() behaves the same as a $node.
-        /** @var \Drupal\node\NodeInterface $node */
         $node = $node_multilingual->getTranslation($language->getId());
 
         // If the current translation does not have a publish on value, or it is
@@ -171,7 +162,7 @@ class SchedulerManager {
         // @TODO This will now never be thrown due to the empty(publish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($node->publish_on->value)) {
-          $field_definitions = $this->entityFieldManager->getFieldDefinitions('node', $node->getType());
+          $field_definitions = $this->entityManager->getFieldDefinitions('node', $node->getType());
           $field = (string) $field_definitions['publish_on']->getLabel();
           throw new SchedulerMissingDateException(sprintf("Node %d '%s' will not be published because field '%s' has no value", $node->id(), $node->getTitle(), $field));
         }
@@ -237,7 +228,7 @@ class SchedulerManager {
         }
         else {
           // Use the actions system to publish the node.
-          $this->entityTypeManager->getStorage('action')->load('node_publish_action')->getPlugin()->execute($node);
+          $this->entityManager->getStorage('action')->load('node_publish_action')->getPlugin()->execute($node);
         }
 
         // Invoke the event to tell Rules that Scheduler has published the node.
@@ -245,8 +236,8 @@ class SchedulerManager {
           _scheduler_rules_integration_dispatch_cron_event($node, 'publish');
         }
 
-        // Trigger the PUBLISH event so that modules can react after the node
-        // is published.
+        // Trigger the PUBLISH event so that modules can react after the node is
+        // published.
         $event = new SchedulerEvent($node);
         $dispatcher->dispatch(SchedulerEvents::PUBLISH, $event);
         $event->getNode()->save();
@@ -264,8 +255,6 @@ class SchedulerManager {
    * @return bool
    *   TRUE if any node has been unpublished, FALSE otherwise.
    *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Drupal\scheduler\Exception\SchedulerMissingDateException
    * @throws \Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException
    */
@@ -283,7 +272,9 @@ class SchedulerManager {
     $nids = [];
     $scheduler_enabled_types = array_keys(_scheduler_get_scheduler_enabled_node_types($action));
     if (!empty($scheduler_enabled_types)) {
-      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      // @TODO: \Drupal calls should be avoided in classes.
+      // Replace \Drupal::entityQuery with dependency injection?
+      $query = \Drupal::entityQuery('node')
         ->exists('unpublish_on')
         ->condition('unpublish_on', REQUEST_TIME, '<=')
         ->condition('type', $scheduler_enabled_types, 'IN')
@@ -313,7 +304,6 @@ class SchedulerManager {
       $languages = $node_multilingual->getTranslationLanguages();
       foreach ($languages as $language) {
         // The object returned by getTranslation() behaves the same as a $node.
-        /** @var \Drupal\node\NodeInterface $node */
         $node = $node_multilingual->getTranslation($language->getId());
 
         // If the current translation does not have an unpublish on value, or it
@@ -343,7 +333,7 @@ class SchedulerManager {
         // @TODO This will now never be thrown due to the empty(unpublish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($unpublish_on)) {
-          $field_definitions = $this->entityFieldManager->getFieldDefinitions('node', $node->getType());
+          $field_definitions = $this->entityManager->getFieldDefinitions('node', $node->getType());
           $field = (string) $field_definitions['unpublish_on']->getLabel();
           throw new SchedulerMissingDateException(sprintf("Node %d '%s' will not be unpublished because field '%s' has no value", $node->id(), $node->getTitle(), $field));
         }
@@ -406,7 +396,7 @@ class SchedulerManager {
         }
         else {
           // Use the actions system to publish the node.
-          $this->entityTypeManager->getStorage('action')->load('node_unpublish_action')->getPlugin()->execute($node);
+          $this->entityManager->getStorage('action')->load('node_unpublish_action')->getPlugin()->execute($node);
         }
 
         // Invoke event to tell Rules that Scheduler has unpublished this node.
@@ -536,7 +526,7 @@ class SchedulerManager {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   protected function loadNodes(array $nids) {
-    $node_storage = $this->entityTypeManager->getStorage('node');
+    $node_storage = $this->entityManager->getStorage('node');
     $nodes = [];
 
     // Load the latest revision for each node.

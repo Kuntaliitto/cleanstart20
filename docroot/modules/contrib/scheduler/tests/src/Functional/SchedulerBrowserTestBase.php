@@ -32,6 +32,14 @@ abstract class SchedulerBrowserTestBase extends BrowserTestBase {
    */
   protected $adminUser;
 
+
+  /**
+   * A user without permission to schedule content.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $restrictedUser;
+
   /**
    * A user with permission to schedule content.
    *
@@ -117,6 +125,15 @@ abstract class SchedulerBrowserTestBase extends BrowserTestBase {
       'view own unpublished content',
       'administer scheduler',
       'schedule publishing of nodes',
+      'view scheduled content',
+    ]);
+
+    // Create an editorial user without permission to schedule content.
+    $this->restrictedUser = $this->drupalCreateUser([
+      'create ' . $this->type . ' content',
+      'edit own ' . $this->type . ' content',
+      'delete own ' . $this->type . ' content',
+      'view own unpublished content',
       'view scheduled content',
     ]);
 

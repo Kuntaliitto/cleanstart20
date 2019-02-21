@@ -85,4 +85,37 @@ class SchedulerNodeAccessTest extends SchedulerBrowserTestBase {
     $this->assertText('scheduled unpublishing', '"Scheduled unpublishing" message is shown in the dblog');
   }
 
+  /**
+   * Tests access to scheduled content .
+   */
+  public function testRestrictedAccess() {
+
+    // Create a node with the required scheduler date.
+    $settings = [
+      'type' => $this->type,
+      'status' => FALSE,
+      'title' => 'Test node restricted',
+      'publish_on' => REQUEST_TIME + 1,
+      'author' => $this->schedulerUser->getAccountName(),
+    ];
+    $node = $this->drupalCreateNode($settings);
+
+    $node->setOwner($this->schedulerUser);
+    $node->save();
+
+    // Check that the scheduler editor is able to edit the node.
+    $this->drupalLogin($this->schedulerUser);
+    $this->drupalGet('node/' . $node->id() . '/edit');
+    $this->assertResponse(200, 'Scheduler user should be able to edit the node."');
+    $this->drupalLogout();
+
+    $node->setOwner($this->restrictedUser);
+    $node->save();
+    // Check that the restricted editor is not able to edit the node.
+    $this->drupalLogin($this->restrictedUser);
+    $this->drupalGet('node/' . $node->id() . '/edit');
+    $this->assertResponse(403, 'Restricted user should be not be able to edit the node."');
+    $this->drupalLogout();
+  }
+
 }
